@@ -53,7 +53,7 @@ export const labData: LabRow[] = [
 
         start: "30-Mar-2026",
         end: "06-Apr-2026",
-        conteudo: "Processo de compilação, gravação e commit de código; STM32 para VSCode;",
+        conteudo: "Configuração do Ambiente ESP32 (Parte 02);",
     },
     {
         tarefa: "LAB03",
