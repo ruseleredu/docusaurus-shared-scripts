@@ -69,15 +69,6 @@ export default function LabTeamMembers({
                         <ThemeCodeBlock className="language-bash">
                             {`code . --profile "${vscodeProfile}"`}
                         </ThemeCodeBlock>
-                        <p>
-                            <b>3.</b> Fluxo diário de trabalho:
-                        </p>
-                        <ThemeCodeBlock className="language-bash">
-                            {`git pull
-git add .
-git commit -m "Descreva suas alterações"
-git push`}
-                        </ThemeCodeBlock>
                     </TabItem>
                 );
             })}
