@@ -42,6 +42,14 @@ const navbarItems: NavbarItem[] = [
         position: "left",
         items: [
             {
+                to: "/infra/solicitar-inclusao-em-time", // Link to a page in your infra docs
+                label: "Solicitar inclusão em um time",
+            },
+            {
+                to: "/infra/repositorio-de-notas", // Link to a page in your infra docs
+                label: "Correção automática",
+            },
+            {
                 to: "/infra/teams", // Link to a page in your infra docs
                 label: "Grupos/Organizações",
             },
