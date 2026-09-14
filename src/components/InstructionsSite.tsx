@@ -164,6 +164,20 @@ export function DevTools() {
                     git config --list --show-origin
                 </ThemeCodeBlock>
             </TabItem>
+            <TabItem value="gh" label="GitHub CLI">
+                <p><b>O <Link to="/docs/github-cli">GitHub CLI</Link> traz o GitHub para o seu terminal.</b></p>
+                <ul>
+                    <li>O <a href="https://cli.github.com/" target="_blank">GitHub CLI</a> é uma ferramenta de linha de comando que permite interagir com o GitHub diretamente pelo terminal. Está disponível para Windows, macOS e Linux.
+                    </li>
+                </ul>
+                <ThemeCodeBlock className="language-bash">
+                    winget install --id GitHub.cli -e --source winget
+                </ThemeCodeBlock>
+                <p>Status de login do <Link to="/docs/github-cli">GitHub CLI</Link>:</p>
+                <ThemeCodeBlock className="language-bash">
+                    gh auth status
+                </ThemeCodeBlock>
+            </TabItem>
             <TabItem value="vscode" label="VS Code">
                 <p><b><Link to="/docs/vs-code-intro">Visual Studio Code</Link>: IDE e Editor de Código para Desenvolvimento de Software.</b></p>
                 <ul>
