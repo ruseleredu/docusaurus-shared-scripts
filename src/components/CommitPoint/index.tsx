@@ -49,7 +49,7 @@ function useAutoNumber(): number {
 export interface CommitPointProps {
   /** Descricao da tarefa (obrigatoria). */
   task: string;
-  /** Tipo do admonition. Default: 'info'. */
+  /** Tipo do admonition. Default: 'tip'. */
   type?: AdmonitionType;
   /** Pontos da tarefa (exibidos no titulo). */
   pontos?: number;
@@ -67,6 +67,10 @@ export interface CommitPointProps {
   title?: ReactNode;
   /** Id da ancora para deep-link. Default: o token em minusculas (ex.: "t1"). */
   id?: string;
+  /** Marca a tarefa com commit vazio (ex.: deploy/release, que nao muda arquivos). */
+  allowEmpty?: boolean;
+  /** Comando extra mostrado apos o commit (ex.: alias de deploy). */
+  run?: string;
 }
 
 export default function CommitPoint({
@@ -80,6 +84,8 @@ export default function CommitPoint({
   n,
   title,
   id,
+  allowEmpty = false,
+  run,
 }: CommitPointProps): ReactNode {
   const auto = useAutoNumber();
   const numero = n != null ? n : auto;
@@ -90,8 +96,11 @@ export default function CommitPoint({
   const anchorId = (id ?? token).toLowerCase();
 
   const mensagem = `${token}: ${task}`;
+  const commit = allowEmpty
+    ? `git commit --allow-empty -m "${mensagem}"`             // deploy/release: sem mudanca de arquivo
+    : `git add ${files} && git commit -m "${mensagem}"`;
   const comando =
-    `git add ${files} && git commit -m "${mensagem}"` + (push ? ' && git push' : '');
+    commit + (push ? ' && git push' : '') + (run ? `\n${run}` : '');
 
   const tituloPadrao: ReactNode = (
     <>
