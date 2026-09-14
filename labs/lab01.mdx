@@ -87,24 +87,9 @@ Um username digitado errado impede a inclusão e atrasa o processo. Confirme no 
 perfil antes de enviar.
 :::
 
-- [ELT85B-N21-2026-2:LAB00](https://github.com/orgs/ELT85B-N21-2026-2/repositories?q=lab00)
+import LabStructure from "@site/src/components/LabStructure";
 
-```bash
-Organization: ELT85B-N21-2026-2
-│
-├── Teams
-│   ├── Grupo-A
-│   ├── Grupo-B
-│   ├── ...
-│   └── Grupo-P (Professor)
-│
-└── Repositories
-    ├── lab01-template
-    ├── lab01-grupo-a
-    ├── lab01-grupo-b
-    ├── ...
-    └── lab01-grupo-p (Professor)
-```
+<LabStructure lab="01" />
 
 ## Verifique o seu ambiente de desenvolvimento
 
@@ -372,24 +357,6 @@ git branch -d feature/ex2
 
 ---
 
-## 4. PlatformIO / embedded labs (if applicable)
-
-```bash
-# Build
-pio run
-
-# Upload to board
-pio run -t upload
-
-# Serial monitor
-pio device monitor
-
-# Run tests
-pio test
-```
-
----
-
 ## 5. What you **can** and **cannot** do
 
 | Action                                        | Allowed?                 |
@@ -403,24 +370,6 @@ pio test
 | Access `lab00-template` (if private)          | Only if granted          |
 
 Your access comes from the **team** (`grupo-a`, etc.), not from being repo admin.
-
----
-
-## 6. Quick reference by lab
-
-| Lab     | Repository                          |
-| ------- | ----------------------------------- |
-| LAB00   | `ELT73A-S22-2026-2/lab00-grupo-a`   |
-| LAB05   | `ELT73A-S22-2026-2/lab05-grupo-a`   |
-| Projeto | `ELT73A-S22-2026-2/projeto-grupo-a` |
-
-Replace `a` with your group letter (`b`, `c`, …).
-
-Clone pattern:
-
-```bash
-gh repo clone ELT73A-S22-2026-2/lab05-grupo-a
-```
 
 ---
 
@@ -533,38 +482,6 @@ $$\left( \sum_{k=1}^n a_k b_k \right)^2 \leq \left( \sum_{k=1}^n a_k^2 \right) \
 ![LAB status](https://img.shields.io/badge/LAB_01-OK-blue?logo=github)
 
 ![LAB status](https://img.shields.io/badge/LAB_01-TODO-red?logo=github)
-
-## Como formatar o seu código em C no VScode
-
-Como formatar o seu código em C no VScode
-
-<iframe
-  width="560"
-  height="315"
-  src="https://www.youtube.com/embed/GsGjdF7TkoM?si=CTQkIU3wxt4tFkck"
-  title="YouTube video player"
-  frameborder="0"
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-  referrerpolicy="strict-origin-when-cross-origin"
-  allowfullscreen
-></iframe>
-
-## Escolha e configuração de temas no VScode
-
-Escolha e configuração de temas no VScode
-
-<iframe
-  width="560"
-  height="315"
-  src="https://www.youtube.com/embed/p1kprMBB9fQ?si=iPNpFzCl0s-8u58V"
-  title="YouTube video player"
-  frameborder="0"
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-  referrerpolicy="strict-origin-when-cross-origin"
-  allowfullscreen
-></iframe>
-
----
 
 {/* Logout do seu ambiente dev, git e gh */}
 
