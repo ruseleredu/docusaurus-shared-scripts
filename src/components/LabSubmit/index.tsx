@@ -120,7 +120,7 @@ export default function LabSubmit({ labName }: LabSubmitProps): ReactElement {
           Cada cartão <strong>Ponto de commit</strong> é uma tarefa: faça-a, copie o comando do cartão e rode.
           A mensagem começa com o código (<code>T1:</code>, <code>T2:</code>…) — é como a correção identifica sua entrega.
           Um commit por tarefa; pode refazer (vale o mais recente); e <strong>não esqueça o <code>git push</code></strong>.
-          Detalhes em <a href="/lab/como-funciona-avaliacao">Como funciona a avaliação</a>.
+          Detalhes em <a href="/mic-docs/labs/como-funciona-avaliacao">Como funciona a avaliação</a>.
         </p>
       </Admonition>
     </div>
