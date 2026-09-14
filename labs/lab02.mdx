@@ -8,7 +8,7 @@ import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 import { LABsApoio } from "@site/src/components/AvisosSite";
 import {
-  DevToolsv2,
+  DevTools,
   GitConfig,
   GitCommit,
 } from "@site/src/components/InstructionsSite";
@@ -27,24 +27,32 @@ import {
 
 ---
 
-## Conteúdo
+## Checklist — Configuração do Ambiente ESP32 (Parte 02)
 
-Processo de compilação, gravação e commit de código;
+- [ ] Verificar `git --version`
+- [ ] Abrir o VS Code
+- [ ] Abrir a extensão PlatformIO IDE
+- [ ] Instalar a extensão Wokwi
+- [ ] Ativar/configurar o Wokwi
+- [ ] Criar um projeto ESP32
+- [ ] Selecionar o framework Arduino
+- [ ] Executar o primeiro Build
+- [ ] Criar `wokwi.toml`
+- [ ] Criar `diagram.json`
+- [ ] Executar a simulação
+- [ ] Verificar o Serial Monitor
+- [ ] Atualizar o repositório no GitHub
+- [ ] Executar `git push`
+- [ ] Confirmar que o projeto está disponível no GitHub
+- [ ] Logout
 
-- [ ] Crie uma conta no [my.st.com](https://www.st.com/content/st_com/en/user-registration.html);
-- [ ] Instale o [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html#get-software);
-- [ ] Instale o [ST-MCU-Finder](https://www.st.com/en/development-tools/st-mcu-finder-pc.html#get-software);
-- [ ] Instale o [STM32CubeProg](https://www.st.com/en/development-tools/stm32cubeprog.html#get-software);
-- [ ] Crie um perfil no Visual Studio Code chamado `STM32`;
-- [ ] Instale [STM32Cube para Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=stmicroelectronics.stm32-vscode-extension);
-- [ ] Configure o Visual Studio Code;
-- [ ] Teste de geração e compilação de projeto para o STM32F411CEUx;
+<LabStructure lab="02" />
 
 ## Verifique o seu ambiente de desenvolvimento
 
 {/* List of Dev Tools */}
 
-<DevToolsv2 />
+<DevTools />
 
 {/* Configure o git */}
 
@@ -52,162 +60,394 @@ Processo de compilação, gravação e commit de código;
 
 ---
 
-## Crie um novo repositório com base no template do LAB02 {/* #new-repo-from-tpl */}
+## Clone o repositório inicial do LAB02
 
-Escolha o Grupo e entre com o comando abaixo para criar o repositório no GitHub:
+Escolha o seu grupo e entre com o comando abaixo para criar o repositório no GitHub:
 
-{/* Gera instruções para criar o repositório no GitHub por grupo com base no template do laboratório. */}
-
-<LabFromTemplate labNumber="LAB02" opts="-c" />
+<LabTeamMembers labName="lab02" />
 
 {/* Git Commit */}
 
 <GitCommit />
 
-## Instalação do VScode e extensão para o STM32
+## Envie o link do repositório do seu grupo no Moodle:
 
-<iframe
-  width="560"
-  height="315"
-  src="https://www.youtube.com/embed/a5A4wAYuuOY?si=78Cd1dAWLqcsN9oG"
-  title="YouTube video player"
-  frameborder="0"
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-  referrerpolicy="strict-origin-when-cross-origin"
-  allowfullscreen
-></iframe>
+<LabSubmit labName="lab02" />
+
+## Crie um novo projeto no PlatformIO
 
 ```bash
-code --list-extensions --profile "STM32"
+pio project init -b esp32dev -O "framework=arduino" -O "monitor_speed=115200" --sample-code
 ```
 
-<details>
- <summary>Recomendações de extensões e configurações para o VS Code.</summary>
-```json title=".vscode/extensions.json"
+```bash
+include - Put project header files here
+lib - Put project specific (private) libraries here
+src - Put project source files here
+platformio.ini - Project Configuration File
+Resolving esp32dev dependencies...
+Already up-to-date.
+Project has been successfully initialized!
+```
+
+<CommitPoint task="pio project init" pontos={10} />
+
+Crie ou edite o arquivo src/main.cpp com a seguinte estrutura:
+
+<FileTree root="lab02-grupo-x (git repo)" files={["src/main.cpp add"]} />
+
+```c title="src/main.cpp"
+#include <Arduino.h>
+
+// Definição de pinos
+#define LED_PIN 2
+
+// Protótipos de funções (obrigatório em C/C++ padrão)
+void blinkLed(uint8_t pin, uint16_t delayMs);
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(LED_PIN, OUTPUT);
+  Serial.println("ESP32 Inicializado!");
+}
+
+void loop() {
+  blinkLed(LED_PIN, 500);
+}
+
+// Implementação de funções auxiliares
+void blinkLed(uint8_t pin, uint16_t delayMs) {
+  digitalWrite(pin, HIGH);
+  delay(delayMs);
+  digitalWrite(pin, LOW);
+  delay(delayMs);
+}
+```
+
+<CommitPoint task="pio project init" pontos={10} />
+
+## ESP32 Arduino Hal Logging
+
+Aqui está um exemplo completo para o arquivo `src/main.cpp`.
+
+Este código demonstra a diferença entre as macros nativas do **ESP32 Arduino Hal Logging** (`log_i`, `log_w`, `log_e`, etc.) e o método tradicional `Serial.println()`, além de realizar o piscar de LED (_blink_) assíncrono utilizando `millis()`.
+
+---
+
+### Código: `src/main.cpp`
+
+<FileTree root="lab02-grupo-x (git repo)" files={["src/main.cpp edit"]} />
+
+```cpp title="src/main.cpp"
+#include <Arduino.h>
+
+// Definição do pino do LED (GPIO 2 é o LED embutido na maioria das placas ESP32 DevKit)
+#define LED_PIN 2
+
+// Intervalo de tempo para o Blink (em milissegundos)
+const unsigned long BLINK_INTERVAL = 500;
+
+// Variáveis de controle de tempo
+unsigned long previousMillis = 0;
+bool ledState = LOW;
+uint32_t counter = 0;
+
+void setup() {
+    // Configura o pino do LED como saída
+    pinMode(LED_PIN, OUTPUT);
+
+    // Inicializa a comunicação serial a 115200 baud
+    Serial.begin(115200);
+
+    // Aguarda um instante para a estabilização da conexão Serial
+    delay(1000);
+
+    Serial.println("\n==============================================");
+    Serial.println("   ESP32 Lab: Teste de Logs e Blink de LED   ");
+    Serial.println("==============================================\n");
+
+    // Mensagens de Log do ESP32 (requer CORE_DEBUG_LEVEL > 0 no platformio.ini)
+    log_v("Log de Verbose: Informação detalhada/baixa relevância.");
+    log_d("Log de Debug: Informação para depuração do sistema.");
+    log_i("Log de Info: Sistema inicializado com sucesso no pino GPIO %d.", LED_PIN);
+    log_w("Log de Warning: Este é um exemplo de aviso!");
+    log_e("Log de Error: Este é um exemplo de erro simulação!");
+}
+
+void loop() {
+    unsigned long currentMillis = millis();
+
+    // Lógica de tempo não-bloqueante (evita o uso de delay)
+    if (currentMillis - previousMillis >= BLINK_INTERVAL) {
+        previousMillis = currentMillis;
+
+        // Inverte o estado do LED
+        ledState = !ledState;
+        digitalWrite(LED_PIN, ledState);
+
+        counter++;
+
+        // Mensagem via Serial.println padrão do Arduino
+        Serial.print("[Arduino Serial] Ciclo do LED: ");
+        Serial.print(counter);
+        Serial.print(" | Estado atual: ");
+        Serial.println(ledState ? "LIGADO" : "DESLIGADO");
+
+        // Mensagem usando o Log nativo do ESP32 a cada 5 trocas de estado
+        if (counter % 5 == 0) {
+            log_i("Contador atingiu %u trocas de estado.", counter);
+        }
+    }
+}
+
+```
+
+### Configurar o `platformio.ini`
+
+Este é o passo **mais importante** da aula. Abra o `platformio.ini` na raiz do projeto e deixe-o assim:
+
+<FileTree root="lab02-grupo-x (git repo)" files={["platformio.ini edit"]} />
+
+```ini title="platformio.ini"
+; CORE_DEBUG_LEVEL define ate que nivel de log sera COMPILADO:
+;   0 = NONE | 1 = ERROR | 2 = WARN | 3 = INFO | 4 = DEBUG | 5 = VERBOSE
+build_flags =
+    -D CORE_DEBUG_LEVEL=5
+    -D CONFIG_ARDUHAL_LOG_COLORS=1       ; Habilita cores no console
+```
+
+| Macro                 | `CORE_DEBUG_LEVEL` ≥ | Uso típico       |
+| --------------------- | -------------------- | ---------------- |
+| `log_e("...", ...)`   | 1                    | Erro             |
+| `log_w("...", ...)`   | 2                    | Aviso            |
+| `log_i("...", ...)`   | 3                    | Informação       |
+| `log_d("...", ...)`   | 4                    | Debug            |
+| `log_v("...", ...)`   | 5                    | Verbose          |
+| `log_buf_i(buf, tam)` | 3                    | Dump hexadecimal |
+
+Em `platformio.ini`: `build_flags = -DCORE_DEBUG_LEVEL=<0..5>`
+
+:::danger[Erro nº 1 dos iniciantes]
+Se você esquecer o `-DCORE_DEBUG_LEVEL`, o valor padrão costuma ser `0` (NONE) e **nada aparece**, mesmo com o código correto. Se seus logs sumiram, comece a investigação por aqui.
+:::
+
+<CommitPoint
+  task="Teste de Logs e Blink de LED"
+  pontos={10}
+  files="src/main.cpp"
+/>
+
+---
+
+## Simulação com Wokwi
+
+Objetivo: validar lógica **sem depender da bancada**.
+
+- https://docs.wokwi.com/guides/esp32#arduino-examples
+
+### Opção A — Extensão Wokwi no VS Code
+
+- https://docs.wokwi.com/vscode/project-config
+
+1. Instale **Wokwi Simulator**
+2. No projeto, use/crie:
+   - `diagram.json` — circuito (ESP32, LED, fios)
+   - `wokwi.toml` — liga o firmware do PlatformIO ao simulador (conforme docs do template)
+3. Comando típico da extensão: **Start Simulator**
+4. Abra o monitor serial do Wokwi e veja o mesmo `Serial.println`
+
+A basic wokwi.toml file looks like this:
+
+<FileTree root="lab02-grupo-x (git repo)" files={["wokwi.toml add"]} />
+
+```toml title="wokwi.toml"
+[wokwi]
+version = 1
+firmware = '.pio/build/esp32dev/firmware.bin'
+elf = '.pio/build/esp32dev/firmware.elf'
+```
+
+### Opção B — Wokwi no navegador
+
+1. Acesse [wokwi.com](https://wokwi.com)
+2. Novo projeto → **ESP32**
+3. Cole o conteúdo de `src/main.cpp`
+4. Monte LED no GPIO do `LED_BUILTIN` (ou no GPIO que o template usar)
+5. **Start** e observe LED + serial
+
+### Exemplo mínimo de ideia de `diagram.json` (LED no GPIO 2)
+
+Muitos DevKit tratam LED embutido no GPIO 2 — confirme no template.
+
+**Checklist Wokwi**
+
+- [ ] Projeto simula e imprime no serial a mensagem do grupo
+- [ ] LED pisca conforme o `loop()`
+- [ ] Você não precisou da placa física para esta parte
+
+<FileTree root="lab02-grupo-x (git repo)" files={["diagram.json add"]} />
+
+```json title="diagram.json"
 {
-  "recommendations": [
-    "dan-c-underwood.arm",
-    "jeff-hykin.better-cpp-syntax",
-    "marus25.cortex-debug",
-    "mcu-debug.debug-tracker-vscode",
-    "mcu-debug.memory-view",
-    "mcu-debug.peripheral-viewer",
-    "mcu-debug.rtos-views",
-    "ms-vscode.cmake-tools",
-    "ms-vscode.cpptools",
-    "ms-vscode.cpptools-extension-pack",
-    "ms-vscode.cpptools-themes",
-    "ms-vscode.hexeditor",
-    "pkief.material-icon-theme",
-    "stmicroelectronics.stm32-vscode-extension",
-    "trond-snekvik.gnu-mapfiles",
-    "twxs.cmake",
-    "yzhang.markdown-all-in-one",
-    "zixuanwang.linkerscript"
+  "version": 1,
+  "author": "Uri Shaked",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-esp32-devkit-v1",
+      "id": "esp",
+      "top": 0,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": -3.33,
+      "left": 153.33,
+      "attrs": { "color": "red" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 64,
+      "left": 149.33,
+      "rotate": 90,
+      "attrs": {}
+    }
+  ],
+  "connections": [
+    ["esp:TX0", "$serialMonitor:RX", "", []],
+    ["esp:RX0", "$serialMonitor:TX", "", []],
+    ["esp:GND.1", "led1:C", "black", ["h0"]],
+    ["led1:A", "r1:1", "green", ["v0"]],
+    ["r1:2", "esp:D2", "green", ["h0", "v38"]]
   ]
 }
 ```
 
-```json title=".vscode/settings.json"
-{
-  "editor.formatOnSave": true,
-  "editor.defaultFormatter": "ms-vscode.cpptools",
-  "editor.formatOnPaste": true,
-  "terminal.integrated.defaultProfile.windows": "Command Prompt",
-  "workbench.iconTheme": "material-icon-theme",
-  "[markdown]": {
-    "editor.defaultFormatter": "yzhang.markdown-all-in-one"
-  },
-  "[jsonc]": {
-    "editor.defaultFormatter": "vscode.json-language-features"
-  },
-  "cmake.options.statusBarVisibility": "visible"
-}
-```
+- [Migrating Wokwi projects to VS Code](https://docs.wokwi.com/vscode/migrating)
+- [Wokwi CLI Usage](https://docs.wokwi.com/wokwi-ci/cli-usage)
 
-</details>
-
-## Diagrama de pinos do STM32F4x1
+<CommitPoint
+  task="Configurando o Wokwi"
+  pontos={15}
+  files="diagram.json wokwi.toml"
+/>
 
 ---
 
-![STM32F4x1 microcontroller pinout diagram;](/img/MiniSTM32F4x1/STM32F4x1_PinoutDiagram_RichardBalint.png)
+## Tipos de Dados e Constantes no ESP32
 
-O debugger [ST-LINK/V2](/docs/st-link) possue um conector IDC de 10 pinos. A pinagem é descrita na figura a seguir.
-
-![ST-LINK/V2 Clone](/img/ST-LINK_V2_Clone_Header.png)
+- [Aula de Laboratório — Tipos de Dados e Constantes no ESP32](/mic-docs/lab/tipos-dados-constantes)
 
 ---
 
-## Como carregar um script do STM32CubeMX
+## Bits, Bytes e Operadores no ESP32
 
-- https://www.st.com/resource/en/user_manual/um1718-stm32cubemx-for-stm32-configuration-and-initialization-c-code-generation-stmicroelectronics.pdf
+- [Aula de Laboratório — Bits, Bytes e Operadores no ESP32](/mic-docs/lab/bits-bytes-operadores)
 
-To run STM32CubeMX in interactive command-line mode, use the following command line:
+---
 
-```bash
-"%STM32CubeMX_PATH%\jre\bin\java" -jar "%STM32CubeMX_PATH%\STM32CubeMX.exe" -i
+## Estruturas de Controle no ESP32
+
+- [Aula de Laboratório — Estruturas de Controle no ESP32](/mic-docs/labs/estruturas-de-controle)
+
+---
+
+## CI workflow
+
+Example workflow (.github/workflows/grade.yml):
+
+<FileTree
+  root="lab02-grupo-x (git repo)"
+  files={[".github/workflows/grade.yml add"]}
+/>
+
+```yaml title=".github/workflows/grade.yml"
+name: Build & Test
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Cache PlatformIO
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.platformio/.cache
+            ~/.platformio/packages
+          key: ${{ runner.os }}-pio-${{ hashFiles('platformio.ini') }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install PlatformIO
+        run: pip install platformio
+
+      - name: Build project
+        run: pio run
+
+      # Uncomment if you want native/unit tests in CI
+      # - name: Run tests
+      #   run: pio test -e native
 ```
 
-To generate a script
+<CommitPoint
+  task="GitHub action"
+  pontos={15}
+  files=".github/workflows/grade.yml"
+/>
 
-```bash
-export script ScriptToLoad.txt
-```
+## Wokwi for CI and GitHub Actions (TODO)
 
-To run STM32CubeMX in command-line mode, getting commands from a script, use the following command line:
+GitHub action for using Wokwi Embedded Systems Simulator in your CI workflow.
 
-```bash
-"%STM32CubeMX_PATH%\jre\bin\java" -jar "%STM32CubeMX_PATH%\STM32CubeMX.exe" -s ScriptToLoad.txt
-```
-
-Exemplo de arquivo txt de configuração:
-
-```bash title="ScriptToLoad.txt"
-load STM32F411CEUx
-set pin "PC14-OSC32_IN" RCC_OSC32_IN
-lock pin "PC14-OSC32_IN" false
-set pin "PC15-OSC32_OUT" RCC_OSC32_OUT
-lock pin "PC15-OSC32_OUT" false
-set pin "PH0 - OSC_IN" RCC_OSC_IN
-lock pin "PH0 - OSC_IN" false
-set pin "PH1 - OSC_OUT" RCC_OSC_OUT
-lock pin "PH1 - OSC_OUT" false
-set pin "PA13" SYS_JTMS-SWDIO
-lock pin "PA13" false
-set pin "PA14" SYS_JTCK-SWCLK
-lock pin "PA14" false
-set mode RCC "HSE-External-Oscillator"
-set mode RCC "LSE-External-Oscillator"
-set mode SYS "Serial_Wire"
-set mode SYS "SysTick"
-```
+- https://docs.wokwi.com/wokwi-ci/getting-started
+- [Migrating Wokwi projects to VS Code](https://docs.wokwi.com/vscode/migrating)
+- [Wokwi CLI Usage](https://docs.wokwi.com/wokwi-ci/cli-usage)
 
 ## VS Code Terminal Configuration
 
 Configure `Git Bash` como terminal integrado do Visual Studio Code para evitar problemas de formatação de texto e comandos:
 
+<FileTree
+  root="lab02-grupo-x (git repo)"
+  files={[".vscode/settings.json edit"]}
+/>
+
 ```json title=".vscode/settings.json"
 "terminal.integrated.defaultProfile.windows": "Git Bash",
 ```
 
-## Crie um [gh alias](/docs/github-cli#aliases) para deploy-debug
+## Crie um [gh alias](/docs/github-cli#aliases) para deploy-esp32io
 
 ```bash
-gh alias set deploy-debug 'tag="$1"; cp ./build/Debug/*.elf ./firmware-debug.elf && gh release create "$tag" ./firmware-debug.elf --generate-notes && rm ./firmware-debug.elf' --shell
+gh alias set deploy-esp32io 'tag="$1"; gh release create "$tag" .pio/build/esp32dev/firmware.bin .pio/build/esp32dev/firmware.elf --generate-notes' --shell
 ```
 
 Como funciona:
 
-- Considera a etiqueta de lançamento como $1.
-- Copia o ELF de ./build/Debug/\*.elf → ./firmware-debug.elf.
-- Executa gh release create com o arquivo renomeado.
-- Limpa removendo o arquivo renomeado temporário.
+Esse alias que você configurou faz o seguinte fluxo em uma única linha de comando:
+
+1. **Recebe o parâmetro `tag`** — o primeiro argumento passado ao comando (`gh deploy-debug v1.0.0` define `tag="v1.0.0"`).
+2. **Executa o `gh release create`** — cria um release no GitHub com a tag informada.
+3. **Anexa os artefatos** — inclui tanto o **firmware.bin** (usado para gravar no ESP32) quanto o **firmware.elf** (útil para depuração).
+4. **Gera notas automaticamente** — o parâmetro `--generate-notes` faz o GitHub compilar um changelog básico com commits e PRs desde o último release.
+
+Ou seja, com um único comando você publica uma nova versão do firmware no GitHub, já com os dois arquivos necessários: o `.bin` para flash e o `.elf` para debug.
 
 Uso:
 
 ```bash
-gh deploy-debug v1.0.0
+gh deploy-esp32io v1.0.0
 ```
 
 ### Rápida verificação do upload
@@ -218,24 +458,15 @@ Assim que o comando terminar, você poderá verificar o upload diretamente em se
 gh release view v1.0.0 --web
 ```
 
-## Instruções
+<CommitPoint
+  task="publica o release do firmware"
+  pontos={10}
+  allowEmpty
+  run="gh deploy-esp32io v1.0"
+/>
 
-Esta atividade de laboratório tem como objetivo verificar a configuração adequada do ambiente de desenvolvimento para o STM32.
+## Logout do seu ambiente dev, git e gh
 
-- [ ] Crie uma organização baseada no nome do grupo;
-- [ ] Adicione os membros do seu grupo a organização;
-- [ ] Adicione o professor como membro da organização;
-- [ ] Crie um projeto em branco na pasta EmptyTest;
-- [ ] Importe um projeto em branco na pasta CubeMxTest;
-- [ ] Commit e push dos arquivos gerados;
-- [ ] Envie o link da organização (hyperlink);
-- [ ] Envie o link do repositório no GitHub (hyperlink);
+import { GitLogOut } from "@site/src/components/InstructionsSite";
 
-## Avaliação
-
-- [ ] Crie uma organização baseada no nome do grupo - 10%
-- [ ] Adicione os membros do seu grupo a organização - 10%
-- [ ] Adicione o professor como membro da organização - 10%
-- [ ] Crie um projeto em branco na pasta EmptyTest - 25%
-- [ ] Importe um projeto em branco na pasta CubeMxTest - 25%
-- [ ] Envie o link da organização e do repositório no GitHub (hyperlink) - 20%
+<GitLogOut />
