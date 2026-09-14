@@ -7,7 +7,6 @@ description: Ambiente de desenvolvimento VS Code; Uso do git e GitHub;
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 import { LABsApoio } from "@site/src/components/AvisosSite";
-import LabFromTemplate from "@site/src/components/LabFromTemplate";
 import {
   VerifyDev1,
   VerifyDev2,
@@ -17,8 +16,6 @@ import {
   GitLogOut,
   GitCommit,
 } from "@site/src/components/InstructionsSite";
-import LabTable from "@site/src/components/LabTable";
-import LabTeamMembers from "@site/src/components/LabTeamMembers";
 
 # Laboratório 01
 
@@ -124,8 +121,6 @@ Escolha o seu grupo e entre com o comando abaixo para criar o repositório no Gi
 - [Melhores práticas do Git](/docs/git-best-practices).
 - [Folha de Dicas de Git do GitHub](/docs/github-git-cheat-sheet).
 
-import ConventionalCommitsTypes from "@site/src/components/ConventionalCommitsTypes";
-
 ## Conventional Commits em Projetos de Firmware e Sistemas Embarcados
 
 Em projetos de firmware e sistemas embarcados (PlatformIO + VS Code + Wokwi para ESP32), a adoção da [Convenção Conventional Commits](https://www.conventionalcommits.org/) traz clareza, facilita a geração automática de changelogs e melhora a colaboração em atividades de laboratório.
@@ -166,6 +161,8 @@ Este documento apresenta a classificação dos tipos de commits e exemplos prát
 | **revert**   | Reverter um commit anterior                                  | Desfazer commit que quebrou o simulador Wokwi         |
 
 ### Exemplos Práticos para Atividades de Laboratório
+
+import ConventionalCommitsTypes from "@site/src/components/ConventionalCommitsTypes";
 
 <ConventionalCommitsTypes />
 

@@ -7,7 +7,6 @@ description: Apresentação da Disicplina; Materiais utilizados na disciplina;
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 import { LABsApoio } from "@site/src/components/AvisosSite";
-import LabFromTemplate from "@site/src/components/LabFromTemplate";
 import {
   VerifyDev1,
   GitConfig,
@@ -15,9 +14,6 @@ import {
   DevToolsv2,
   GitCommit,
 } from "@site/src/components/InstructionsSite";
-import LabTable from "@site/src/components/LabTable";
-
-import LabTeamMembers from "@site/src/components/LabTeamMembers";
 
 # Laboratório 00
 
@@ -58,6 +54,10 @@ a issue.
 - Saber o **slug do seu grupo** (de `grupo-a` até `grupo-j`).
 - Conhecer o seu **username** do GitHub (o nome que aparece no seu perfil, sem o `@`).
   :::
+
+import ConventionalCommitsTypes from "@site/src/components/ConventionalCommitsTypes";
+
+<ConventionalCommitsTypes />
 
 ## Passo a passo
 
@@ -114,8 +114,6 @@ Escolha o seu grupo e entre com o comando abaixo para criar o repositório no Gi
 {/* Git Commit */}
 
 <GitCommit />
-
-import LabSubmit from "@site/src/components/LabSubmit";
 
 ## Envie o link do repositório do seu grupo no Moodle:
 
