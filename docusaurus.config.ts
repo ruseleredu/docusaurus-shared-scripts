@@ -163,6 +163,22 @@ const config: Config = {
       },
     ],
     [
+      "@docusaurus/plugin-content-docs",
+      /** @type {import('@docusaurus/plugin-content-docs').Options} */
+      {
+        id: "infra", // Unique ID for this docs instance
+        path: "infra-docs", // Path to your infra docs folder
+        routeBasePath: "infra", // Base URL for these docs (e.g., yoursite.com/infra/...)
+        sidebarPath: require.resolve("./sidebarsinfra.ts"), // Separate sidebar for infra docs
+        // 👇 Add this line for the last update time
+        remarkPlugins: [remarkMath],
+        rehypePlugins: [rehypeKatex],
+        showLastUpdateAuthor: true,
+        showLastUpdateTime: true,
+        // ... other options specific to your API docs
+      },
+    ],
+    [
       "@cmfcmf/docusaurus-search-local",
       {
         // Options here
@@ -172,14 +188,6 @@ const config: Config = {
   // ... rest of your config
 
   themeConfig: {
-    announcementBar: {
-      id: 'migration_stm32_to_esp32', // Mude este ID para forçar a reexibição se o usuário já tiver fechado
-      content:
-        '⚠️ <strong>Aviso de Migração:</strong> O kit de desenvolvimento do curso migrou do <strong>STM32F411 (Black Pill)</strong> para o <strong>ESP32-DevKitC</strong>. O repositório legado do <a href="https://ruseleredu.github.io/stm32doc/">STM32</a>.',
-      backgroundColor: '#fff3cd', // Fundo amarelo claro (estilo aviso)
-      textColor: '#856404',       // Texto escuro proporcional
-      isCloseable: true,         // Permite ao usuário fechar a barra
-    },
     // Replace with your project's social card
     image: "img/ELT73A-BannerCourse.png",
     navbar: {
@@ -195,7 +203,8 @@ const config: Config = {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
       additionalLanguages: [
-        "autohotkey",
+        // https://prismjs.com/#supported-languages
+        "toml",
         "arduino",
         "apacheconf",
         "nginx",
@@ -203,6 +212,13 @@ const config: Config = {
         "matlab",
         "powershell",
         "ini",
+        "latex",
+        "php",
+        "java",
+        "wasm",
+        "armasm",
+        "asmatmel",
+        "groovy",
       ],
     },
   } satisfies Preset.ThemeConfig,

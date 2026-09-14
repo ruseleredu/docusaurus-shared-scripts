@@ -36,6 +36,18 @@ const navbarItems: NavbarItem[] = [
         label: "Documentos",
     },
     {
+        label: "Infra",
+        to: "/infra/intro", // Link to a page in your infra docs
+        type: "dropdown",
+        position: "left",
+        items: [
+            {
+                to: "/infra/teams", // Link to a page in your infra docs
+                label: "Grupos/Organizações",
+            },
+        ],
+    },
+    {
         to: "/labs/intro", // Link to a page in your API docs
         label: "Laboratórios",
         type: "dropdown",
