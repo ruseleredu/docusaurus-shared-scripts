@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: "Como funciona a avaliação (aluno)"
+    url: "https://SEU-SITE/lab/como-funciona-avaliacao"
+    about: "Antes de abrir uma issue, confira o passo a passo da entrega por commits."
+  - name: "Dúvidas gerais da turma"
+    url: "https://SEU-SITE/forum"
+    about: "Para dúvidas que não são erro/falta/melhoria do sistema de correção."

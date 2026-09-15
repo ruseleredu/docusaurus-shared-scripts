@@ -1,0 +1,43 @@
+name: "Melhoria / sugestão"
+description: "Ideia para melhorar o sistema de correção, workflows, componente ou documentação."
+title: "[Melhoria] "
+labels: ["melhoria", "enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Sugestões são bem-vindas! Descreva o problema/motivação e a proposta.
+  - type: dropdown
+    id: area
+    attributes:
+      label: "Área"
+      options:
+        - "grade.py / checks"
+        - "Workflows (GitHub Actions)"
+        - "CommitPoint (Docusaurus)"
+        - "gen_grade.py (gerador / --check)"
+        - "Wokwi / simulação"
+        - "Documentação"
+        - "Outro"
+    validations:
+      required: true
+  - type: textarea
+    id: motivacao
+    attributes:
+      label: "Problema / motivação"
+      description: "Que dor ou limitação a melhoria resolve?"
+    validations:
+      required: true
+  - type: textarea
+    id: proposta
+    attributes:
+      label: "Proposta"
+      description: "O que você sugere? Se possível, um exemplo concreto."
+    validations:
+      required: true
+  - type: textarea
+    id: alternativas
+    attributes:
+      label: "Alternativas consideradas"
+    validations:
+      required: false
