@@ -142,11 +142,11 @@ const navbarItems: NavbarItem[] = [
         ],
     },
     // { to: "/blog", label: "Blog", position: "right" },
-    { to: "/pdf/CT2026.pdf", label: "Calendário", position: "right", target: '_blank' },
+    //{ to: "/pdf/CT2026.pdf", label: "Calendário", position: "right", target: '_blank' },
     // https://ruseleredu.github.io/iiot-docs/espconnect/
     {
-        href: "https://ruseleredu.github.io/iiot-docs/espconnect/",
-        label: "ESPConnect",
+        href: "https://github.com/ruseleredu/iiot-docs/issues",
+        label: "Issues",
         position: "right",
     },
     {
