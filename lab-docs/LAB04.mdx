@@ -50,31 +50,27 @@ import LabSubmit from "@site/src/components/LabSubmit";
 
 ---
 
+## ESP32 WiFi Networking
+
+- https://docs.wokwi.com/guides/esp32-wifi
+  Learn about the ESP32 WiFi simulation in
+
+LabFi
+
+### ESP32 WiFi Scanning example
+
+- https://wokwi.com/projects/305569599398609473
+
+WiFi.scanNetworks will return the number of networks found
+
+---
+
+### ESP32 HTTP IoT Server Example for Wokwi.com
+
+- https://wokwi.com/projects/320964045035274834
+
 ## Logout do seu ambiente dev, git e gh
 
 import { GitLogOut } from "@site/src/components/InstructionsSite";
 
 <GitLogOut />
-
-## Atributos de Protocolos IoT
-
-**Ementa:** Suporte · Escalabilidade · Determinismo · Segurança · Interoperabilidade
-
-**Stack da semana:** ESP32 · `PubSubClient` · MQTT · Node-RED · HiveMQ
-
-| Aula | Tipo | Conteúdo                                      | Detalhamento                                                                                    |
-| ---- | ---- | --------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| 13   | AT   | Escalabilidade e suporte em protocolos IoT    | Topologias de rede, limitações de banda, QoS, trade-offs de latência vs. throughput             |
-| 14   | AT   | Determinismo, segurança e interoperabilidade  | Tempo real em IoT, TLS/DTLS, autenticação de dispositivos, padrões de interoperabilidade        |
-| 15   | AP   | MQTT com ESP32 e broker público (HiveMQ/EMQX) | Biblioteca `PubSubClient`, publish/subscribe, tópicos, QoS 0/1/2 na prática                     |
-| 16   | AP   | Node-RED: instalação e primeiro fluxo MQTT    | Instalar Node-RED, nodes `mqtt-in`/`mqtt-out`, debug, inject; conectar ao mesmo broker do ESP32 |
-
----
-
-- **Objetivo:** Comparar protocolos.
-- **Atividades:**
-  1. Implementar envio via HTTP (`HTTPClient`).
-  2. Implementar envio via MQTT (`PubSubClient`).
-  3. Simular ambos no Wokwi e comparar latência, overhead e confiabilidade.
-  4. Registrar resultados.
-- **Entrega:** Código comparativo + tabela de análise.

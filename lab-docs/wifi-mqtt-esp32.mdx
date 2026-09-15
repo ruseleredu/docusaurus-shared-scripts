@@ -1,0 +1,676 @@
+---
+id: wifi-mqtt-esp32
+title: WiFi e MQTT no ESP32
+sidebar_label: WiFi e MQTT
+description: Conectar o ESP32 ao WiFi e publicar/assinar dados em um broker MQTT — no simulador Wokwi (broker público) e no ESP32 físico (broker local) — com pontos de commit avaliados.
+keywords:
+  - esp32
+  - wifi
+  - mqtt
+  - wokwi
+  - platformio
+  - pubsubclient
+  - iot
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Aula de Laboratório — WiFi e MQTT no ESP32
+
+**Plataforma:** ESP32 · **Ambiente:** PlatformIO · **Framework:** Arduino · **Simulador:** Wokwi
+
+---
+
+## 1. Objetivos de aprendizagem
+
+Ao final desta aula, o aluno será capaz de:
+
+- Conectar o ESP32 a uma rede **WiFi** (modo estação) e obter o IP.
+- Conectar-se a um **broker MQTT** por IP/host e porta.
+- **Publicar** dados de telemetria periodicamente em um tópico.
+- **Assinar** um tópico e reagir a comandos recebidos (ligar/desligar um LED).
+- Tornar a conexão **robusta** com reconexão automática de WiFi e MQTT.
+- Rodar o mesmo código no **simulador Wokwi** e no **ESP32 físico**, entendendo a diferença entre broker **público** e **local**.
+
+:::info[Pontos de commit]
+Os cartões **"Ponto de commit"** marcam cada tarefa avaliada. Copie o comando do cartão e faça o commit com a mensagem sugerida.
+:::
+
+---
+
+## 2. Material necessário
+
+- 1 × ESP32 (ex.: DevKit v1) **ou** o simulador **Wokwi**.
+- 1 × LED + resistor de 220 Ω (para o comando remoto).
+- Uma rede **WiFi** (real, para o ESP32 físico).
+- Um **broker MQTT**:
+  - **Público** (para o Wokwi): `broker.hivemq.com:1883`.
+  - **Local** (para o ESP32 físico): um **Mosquitto em Docker** na sua máquina/rede (ver "Broker MQTT local com Docker"), ex.: `192.168.0.10:1883`.
+
+---
+
+## 3. Setup — PlatformIO e Wokwi
+
+A biblioteca `WiFi.h` já vem no core do ESP32. Adicione o cliente MQTT (**PubSubClient**):
+
+```ini title="platformio.ini"
+[env:esp32dev]
+platform = espressif32
+board = esp32dev
+framework = arduino
+monitor_speed = 115200
+lib_deps =
+    knolleary/PubSubClient@^2.8
+```
+
+### Onde rodar — escolha o cenário
+
+<Tabs>
+<TabItem value="wokwi-pub" label="Wokwi (broker público)" default>
+
+O jeito mais simples e **gratuito**. O Wokwi tem uma rede WiFi pronta e acesso à internet, então usa-se um broker **público**.
+
+```cpp
+const char* WIFI_SSID = "Wokwi-GUEST";     // rede virtual do Wokwi
+const char* WIFI_PASS = "";                // sem senha
+const char* MQTT_HOST = "broker.hivemq.com"; // broker publico
+const int   MQTT_PORT = 1883;
+```
+
+Para **ver as mensagens**, abra o HiveMQ Web Client
+(`http://www.hivemq.com/demos/websocket-client/`), conecte em `broker.hivemq.com`
+e assine o seu tópico.
+
+</TabItem>
+<TabItem value="wokwi-local" label="Wokwi + Gateway (broker local)">
+
+Para o Wokwi alcançar um broker na **sua rede local** (o Mosquitto em Docker), é
+preciso o **Wokwi IoT Gateway**: baixe o `wokwigw` (github.com/wokwi/wokwigw) e
+ative com **F1 → "Enable Private Wokwi IoT Gateway"**. Aí o `MQTT_HOST` é o **IP da
+máquina** que roda o Docker na LAN (ex.: `192.168.0.10`).
+
+:::warning[Requer Wokwi Club]
+O Private IoT Gateway faz parte da assinatura **Wokwi Club** (paga). Sem ela, use o cenário do broker público.
+:::
+
+</TabItem>
+<TabItem value="fisico" label="ESP32 físico + Docker (broker local)">
+
+No hardware real, use as credenciais da **sua rede** e aponte para o **broker
+local em Docker** (seção "Broker MQTT local com Docker", abaixo). O `MQTT_HOST` é o
+**IP da máquina** que roda o Docker na LAN:
+
+```cpp
+const char* WIFI_SSID = "MinhaRede";        // SSID real
+const char* WIFI_PASS = "minhaSenha";       // senha real
+const char* MQTT_HOST = "192.168.0.10";     // IP da MAQUINA com o Docker (nao "localhost")
+const int   MQTT_PORT = 1883;
+```
+
+Para **ver as mensagens**, abra o **MQTT Explorer** em `http://localhost:3000`
+(sobe junto no Docker e já conecta ao broker).
+
+</TabItem>
+</Tabs>
+
+### Circuito no Wokwi (LED do comando)
+
+<Tabs>
+<TabItem value="diagram" label="diagram.json" default>
+
+```json title="diagram.json"
+{
+  "version": 1,
+  "author": "Aluno",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-devkit-c-v4",
+      "id": "esp",
+      "top": 0,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": -48,
+      "left": 110,
+      "attrs": { "color": "green" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 20,
+      "left": 110,
+      "attrs": { "value": "220" }
+    }
+  ],
+  "connections": [
+    ["esp:TX0", "$serialMonitor:RX", "", []],
+    ["esp:RX0", "$serialMonitor:TX", "", []],
+    ["esp:2", "r1:1", "green", []],
+    ["r1:2", "led1:A", "green", []],
+    ["led1:C", "esp:GND.1", "black", []]
+  ]
+}
+```
+
+</TabItem>
+<TabItem value="wokwi" label="wokwi.toml">
+
+```toml title="wokwi.toml"
+[wokwi]
+version = 1
+firmware = '.pio/build/esp32dev/firmware.bin'
+elf = '.pio/build/esp32dev/firmware.elf'
+```
+
+</TabItem>
+</Tabs>
+
+:::warning[Broker público é compartilhado]
+No `broker.hivemq.com` **qualquer um** vê os tópicos. Use um **prefixo único** para o seu grupo (ex.: `elt85b/grupo-a/...`) e troque `grupo-a` pelo seu, para não misturar com outras mensagens.
+:::
+
+:::info[Aqui o `loop()` trabalha]
+Diferente dos labs anteriores, aqui o `loop()` **não** fica vazio: ele chama `mqtt.loop()` continuamente (mantém a conexão viva e entrega mensagens recebidas) e publica de tempos em tempos.
+:::
+
+### Broker MQTT local com Docker
+
+Para os cenários **local** (ESP32 físico ou Wokwi + Gateway), suba um **Mosquitto**
+e o **MQTT Explorer** com Docker. Crie esta estrutura:
+
+```text
+docker-mqtt/
+├── docker-compose.yml
+└── mosquitto/
+    ├── config/
+    │   └── mosquitto.conf     # precisa ficar exatamente aqui
+    ├── data/
+    └── log/
+```
+
+<Tabs>
+<TabItem value="compose" label="docker-compose.yml" default>
+
+```yaml title="docker-mqtt/docker-compose.yml"
+services:
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    container_name: mosquitto
+    restart: unless-stopped
+    ports:
+      - "1883:1883" # MQTT (TCP) — o ESP32 usa esta
+      - "9001:9001" # MQTT sobre WebSockets (navegador)
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+
+  mqtt-explorer:
+    image: ghcr.io/thomasnordquist/mqtt-explorer:latest
+    container_name: mqtt-explorer
+    restart: unless-stopped
+    ports:
+      - "3000:3000" # interface web para ver/publicar mensagens
+    environment:
+      MQTT_EXPLORER_SKIP_AUTH: "true"
+      PORT: "3000"
+      MQTT_AUTO_CONNECT_HOST: mosquitto
+      MQTT_AUTO_CONNECT_PORT: "1883"
+    volumes:
+      - mqtt-explorer-data:/app/data
+    depends_on:
+      - mosquitto
+
+volumes:
+  mqtt-explorer-data:
+```
+
+</TabItem>
+<TabItem value="conf" label="mosquitto.conf">
+
+```conf title="docker-mqtt/mosquitto/config/mosquitto.conf"
+listener 1883 0.0.0.0
+
+allow_anonymous true
+
+persistence true
+persistence_location /mosquitto/data/
+
+log_dest stdout
+log_dest file /mosquitto/log/mosquitto.log
+
+listener 9001
+protocol websockets
+```
+
+</TabItem>
+</Tabs>
+
+Suba e acompanhe:
+
+```bash
+cd docker-mqtt
+docker compose up -d
+docker compose logs -f mosquitto     # deve mostrar os listeners em 1883 e 9001
+```
+
+Abra o **MQTT Explorer** em `http://localhost:3000` — ele já conecta ao broker e
+mostra os tópicos em tempo real (aqui você também **publica** os comandos `on`/`off`).
+
+:::warning[O ESP32 conecta no IP da máquina, não em `localhost`]
+`localhost` e `mosquitto` só funcionam **dentro** do Docker/host. O ESP32 (físico ou via Wokwi Gateway) precisa do **IP da máquina na LAN** — descubra com `ip addr` (Linux), `ifconfig` (macOS) ou `ipconfig` (Windows) e use esse valor em `MQTT_HOST` (ex.: `192.168.0.10`). O `mosquitto.conf` já escuta em `0.0.0.0`, então aceita conexões da rede.
+:::
+
+---
+
+## Parte 1 — Conectar ao WiFi
+
+Modo estação (`WIFI_STA`), `WiFi.begin()` e espera até `WL_CONNECTED`.
+
+```cpp
+#include <WiFi.h>
+
+const char* WIFI_SSID = "Wokwi-GUEST";
+const char* WIFI_PASS = "";
+
+void conectaWiFi() {
+  Serial.print("Conectando a "); Serial.println(WIFI_SSID);
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(WIFI_SSID, WIFI_PASS);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(300);
+    Serial.print(".");
+  }
+  Serial.println();
+  Serial.print("Conectado! IP: "); Serial.println(WiFi.localIP());
+  Serial.print("RSSI: ");           Serial.println(WiFi.RSSI());
+}
+
+void setup() {
+  Serial.begin(115200);
+  delay(1000);
+  conectaWiFi();
+}
+
+void loop() {}
+```
+
+Saída esperada (o IP varia):
+
+```text
+Conectando a Wokwi-GUEST
+....
+Conectado! IP: 10.13.37.2
+RSSI: -30
+```
+
+<CommitPoint task="conecta ao WiFi e imprime o IP" pontos={8} />
+
+---
+
+## Parte 2 — Conectar ao broker MQTT
+
+O `PubSubClient` usa um `WiFiClient` por baixo. Definimos o servidor e tentamos conectar com um **client id único**.
+
+```cpp
+#include <WiFi.h>
+#include <PubSubClient.h>
+
+const char* WIFI_SSID = "Wokwi-GUEST";
+const char* WIFI_PASS = "";
+const char* MQTT_HOST = "broker.hivemq.com";
+const int   MQTT_PORT = 1883;
+
+WiFiClient   wifiClient;
+PubSubClient mqtt(wifiClient);
+
+void conectaWiFi() {
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(WIFI_SSID, WIFI_PASS);
+  while (WiFi.status() != WL_CONNECTED) { delay(300); Serial.print("."); }
+  Serial.print("\nWiFi OK, IP: "); Serial.println(WiFi.localIP());
+}
+
+void conectaMQTT() {
+  mqtt.setServer(MQTT_HOST, MQTT_PORT);
+  while (!mqtt.connected()) {
+    String clientId = "esp32-" + String(random(0xffff), HEX);
+    Serial.print("Conectando ao broker MQTT... ");
+    if (mqtt.connect(clientId.c_str())) {
+      Serial.println("conectado!");
+    } else {
+      Serial.print("falhou (rc="); Serial.print(mqtt.state());
+      Serial.println("), nova tentativa em 2s");
+      delay(2000);
+    }
+  }
+}
+
+void setup() {
+  Serial.begin(115200);
+  delay(1000);
+  conectaWiFi();
+  conectaMQTT();
+}
+
+void loop() {
+  mqtt.loop();
+}
+```
+
+Saída esperada:
+
+```text
+....
+WiFi OK, IP: 10.13.37.2
+Conectando ao broker MQTT... conectado!
+```
+
+:::note[Código de retorno (rc)]
+Se falhar, `mqtt.state()` dá a pista: `-2` = não alcançou o servidor (host/porta errados ou sem rede), `-4` = timeout, `5` = não autorizado. Muito útil para depurar.
+:::
+
+<CommitPoint task="conecta ao broker MQTT" pontos={8} />
+
+---
+
+## Parte 3 — Publicar telemetria
+
+Publique uma mensagem a cada 2 s, sem `delay()` bloqueante (usando `millis()`). Adicione o tópico e troque o prefixo pelo do **seu grupo**:
+
+```cpp
+const char* TOPIC_TELEMETRIA = "elt85b/grupo-a/telemetria";  // troque 'grupo-a'!
+```
+
+E use este `loop()`:
+
+```cpp
+void loop() {
+  if (!mqtt.connected()) conectaMQTT();
+  mqtt.loop();
+
+  static unsigned long ultimo = 0;
+  if (millis() - ultimo > 2000) {
+    ultimo = millis();
+
+    static int n = 0;
+    n++;
+    float temp = 25.0 + (n % 10);   // leitura simulada
+
+    String payload = String("{\"n\":") + n + ",\"temp\":" + temp + "}";
+    mqtt.publish(TOPIC_TELEMETRIA, payload.c_str());
+    Serial.print("Publicado: "); Serial.println(payload);
+  }
+}
+```
+
+Saída esperada (a cada 2 s):
+
+```text
+Publicado: {"n":1,"temp":26.00}
+Publicado: {"n":2,"temp":27.00}
+Publicado: {"n":3,"temp":28.00}
+```
+
+Veja as mensagens chegando: no **MQTT Explorer** (`http://localhost:3000`, broker Docker local) ou no **HiveMQ Web Client** (broker público), assinando `elt85b/grupo-a/telemetria`.
+
+<CommitPoint task="publica telemetria periodica num topico" pontos={8} />
+
+---
+
+## Parte 4 — Assinar um tópico e receber comandos
+
+Vamos ligar/desligar um LED por MQTT. Defina o LED e o tópico de comando, registre um **callback** e **assine** o tópico após conectar.
+
+```cpp
+const int LED = 2;
+const char* TOPIC_COMANDO = "elt85b/grupo-a/comando";  // troque 'grupo-a'!
+
+void aoReceber(char* topico, byte* payload, unsigned int tam) {
+  String msg;
+  for (unsigned int i = 0; i < tam; i++) msg += (char)payload[i];
+  Serial.print("Recebido ["); Serial.print(topico); Serial.print("]: "); Serial.println(msg);
+
+  if (msg == "on")  digitalWrite(LED, HIGH);
+  if (msg == "off") digitalWrite(LED, LOW);
+}
+```
+
+No `setup()`, depois de `Serial.begin`:
+
+```cpp
+  pinMode(LED, OUTPUT);
+  mqtt.setCallback(aoReceber);
+```
+
+E, dentro de `conectaMQTT()`, logo após conectar com sucesso:
+
+```cpp
+      mqtt.subscribe(TOPIC_COMANDO);
+```
+
+Publique `on` ou `off` em `elt85b/grupo-a/comando` (pelo **MQTT Explorer** local ou pelo **HiveMQ Web Client** público) e veja o LED reagir no Wokwi.
+
+:::tip[`mqtt.loop()` é obrigatório]
+As mensagens recebidas só chegam ao seu callback enquanto `mqtt.loop()` roda. Nunca use `delay()` longo no `loop()` — ele "engole" as mensagens.
+:::
+
+<CommitPoint task="assina um topico e liga o LED por comando" pontos={8} />
+
+---
+
+## Parte 5 — Reconexão automática (WiFi + MQTT)
+
+Redes caem. Verifique WiFi e MQTT a cada volta do `loop()` e reconecte quando necessário — sem travar o programa.
+
+```cpp
+void garanteConexao() {
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("WiFi caiu, reconectando...");
+    conectaWiFi();
+  }
+  if (!mqtt.connected()) {
+    conectaMQTT();
+  }
+}
+
+void loop() {
+  garanteConexao();
+  mqtt.loop();
+  // ... publicacao periodica da Parte 3 ...
+}
+```
+
+<CommitPoint task="reconecta WiFi e MQTT automaticamente" pontos={8} />
+
+---
+
+## 9. Projeto integrador — Nó de telemetria com comando remoto
+
+Junta **tudo**: conecta WiFi + MQTT com reconexão, **publica** telemetria a cada 2 s e **recebe** comandos para o LED. Rode no Wokwi (broker público) e, se tiver o broker local, no ESP32 físico.
+
+```cpp
+#include <WiFi.h>
+#include <PubSubClient.h>
+
+// ==== Configuracao (ajuste ao seu cenario) ====
+const char* WIFI_SSID = "Wokwi-GUEST";
+const char* WIFI_PASS = "";
+const char* MQTT_HOST = "broker.hivemq.com";   // fisico/local: "192.168.0.10"
+const int   MQTT_PORT = 1883;
+
+const char* TOPIC_TELEMETRIA = "elt85b/grupo-a/telemetria";  // troque 'grupo-a'!
+const char* TOPIC_COMANDO    = "elt85b/grupo-a/comando";
+
+const int LED = 2;
+
+WiFiClient   wifiClient;
+PubSubClient mqtt(wifiClient);
+
+void conectaWiFi() {
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(WIFI_SSID, WIFI_PASS);
+  while (WiFi.status() != WL_CONNECTED) { delay(300); Serial.print("."); }
+  Serial.print("\nWiFi OK, IP: "); Serial.println(WiFi.localIP());
+}
+
+void aoReceber(char* topico, byte* payload, unsigned int tam) {
+  String msg;
+  for (unsigned int i = 0; i < tam; i++) msg += (char)payload[i];
+  Serial.print("Comando ["); Serial.print(topico); Serial.print("]: "); Serial.println(msg);
+  if (msg == "on")  digitalWrite(LED, HIGH);
+  if (msg == "off") digitalWrite(LED, LOW);
+}
+
+void conectaMQTT() {
+  mqtt.setServer(MQTT_HOST, MQTT_PORT);
+  mqtt.setCallback(aoReceber);
+  while (!mqtt.connected()) {
+    String clientId = "esp32-" + String(random(0xffff), HEX);
+    Serial.print("Conectando ao broker... ");
+    if (mqtt.connect(clientId.c_str())) {
+      Serial.println("ok");
+      mqtt.subscribe(TOPIC_COMANDO);
+    } else {
+      Serial.print("rc="); Serial.print(mqtt.state()); Serial.println(", 2s...");
+      delay(2000);
+    }
+  }
+}
+
+void garanteConexao() {
+  if (WiFi.status() != WL_CONNECTED) conectaWiFi();
+  if (!mqtt.connected()) conectaMQTT();
+}
+
+void setup() {
+  Serial.begin(115200);
+  delay(1000);
+  pinMode(LED, OUTPUT);
+  conectaWiFi();
+  conectaMQTT();
+}
+
+void loop() {
+  garanteConexao();
+  mqtt.loop();
+
+  static unsigned long ultimo = 0;
+  if (millis() - ultimo > 2000) {
+    ultimo = millis();
+    static int n = 0;
+    n++;
+    float temp = 25.0 + (n % 10);
+    String payload = String("{\"n\":") + n + ",\"temp\":" + temp + "}";
+    mqtt.publish(TOPIC_TELEMETRIA, payload.c_str());
+    Serial.print("Publicado: "); Serial.println(payload);
+  }
+}
+```
+
+**Esperado:** a cada 2 s uma linha `Publicado: {...}` no serial e no seu tópico; ao publicar `on`/`off` no tópico de comando, o LED acende/apaga.
+
+<CommitPoint task="projeto: no de telemetria com comando remoto" pontos={20} />
+
+---
+
+## 10. Desafios
+
+Tente resolver **sem olhar o gabarito**. Faça o commit de cada desafio conforme concluir.
+
+**D1.** Inclua no payload de telemetria o **RSSI** (`WiFi.RSSI()`) e a **memória livre** (`ESP.getFreeHeap()`).
+
+<CommitPoint task="desafio D1: publica RSSI e heap livre" pontos={10} />
+
+**D2.** Configure um **Last Will (LWT)**: ao conectar, informe ao broker uma mensagem `offline` no tópico `.../status`; e publique `online` (retido) logo após conectar. Assim o broker avisa quando o nó cair.
+
+<CommitPoint task="desafio D2: Last Will (status offline)" pontos={10} />
+
+**D3.** Torne o tópico **único por dispositivo** usando o MAC: monte `elt85b/<mac>/telemetria` a partir de `WiFi.macAddress()`.
+
+<CommitPoint
+  task="desafio D3: topico por dispositivo usando o MAC"
+  pontos={10}
+/>
+
+**D4.** Assine um tópico `.../config` e ajuste o **intervalo de publicação** em tempo real conforme o número recebido (em ms).
+
+<CommitPoint
+  task="desafio D4: intervalo de publicacao configuravel por MQTT"
+  pontos={10}
+/>
+
+---
+
+## 11. Gabarito
+
+:::danger[Spoiler]
+Só abra depois de tentar os desafios por conta própria.
+:::
+
+<details>
+<summary>Ver soluções</summary>
+
+**D1.** No trecho de publicação:
+
+```cpp
+String payload = String("{\"n\":") + n
+               + ",\"temp\":" + temp
+               + ",\"rssi\":" + WiFi.RSSI()
+               + ",\"heap\":" + ESP.getFreeHeap() + "}";
+```
+
+**D2.** Ao conectar, passe o Last Will; depois publique o status `online` retido:
+
+```cpp
+// topico de status
+const char* TOPIC_STATUS = "elt85b/grupo-a/status";
+// no connect: cliente, (sem user/pass), willTopic, willQoS, willRetain, willMessage
+if (mqtt.connect(clientId.c_str(), NULL, NULL, TOPIC_STATUS, 0, true, "offline")) {
+  mqtt.publish(TOPIC_STATUS, "online", true);   // retido
+  mqtt.subscribe(TOPIC_COMANDO);
+}
+```
+
+**D3.**
+
+```cpp
+String mac = WiFi.macAddress();     // ex.: "24:0A:C4:..."
+mac.replace(":", "");
+String topico = "elt85b/" + mac + "/telemetria";
+mqtt.publish(topico.c_str(), payload.c_str());
+```
+
+**D4.** Uma variável global de intervalo, alterada no callback:
+
+```cpp
+unsigned long intervalo = 2000;
+// no callback, para o topico .../config:
+//   intervalo = msg.toInt();   // novo intervalo em ms
+// no loop, troque o "> 2000" por "> intervalo"
+```
+
+</details>
+
+---
+
+## 12. Checklist de encerramento
+
+- [ ] Conectei ao WiFi e vi o IP (Parte 1).
+- [ ] Conectei ao broker MQTT (Parte 2).
+- [ ] Publiquei telemetria e **vi as mensagens** no MQTT Explorer (Docker) ou no HiveMQ Web Client.
+- [ ] (Local) Subi o broker com `docker compose up -d` e abri o MQTT Explorer em `localhost:3000`.
+- [ ] Liguei/desliguei o LED por comando MQTT (Parte 4).
+- [ ] Testei a reconexão (Parte 5).
+- [ ] Rodei o projeto no Wokwi; (opcional) no ESP32 físico com broker local.
+- [ ] Usei um **prefixo de tópico único** do meu grupo.
+- [ ] Fiz o commit de cada ponto marcado (T1 a T10).
+
+---
+
+_Fim da aula._
