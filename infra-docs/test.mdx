@@ -610,3 +610,127 @@ function HighlightMoreText(highlight) {
   return "Nothing highlighted";
 }
 ```
+
+In Docusaurus/MDX, the usual way is to specify the **shell/language** after the opening code fence. This gives syntax highlighting, but it doesn't automatically execute the code.
+
+This gives you complete control over:
+
+🪟 Windows PowerShell
+💻 CMD
+🐧 Bash
+🐍 Python
+🐪 Perl
+⚡ JavaScript
+🔧 PlatformIO
+🔌 ESP32
+🐳 Docker
+
+For example:
+
+### PowerShell
+
+````md
+```powershell title="PowerShell"
+npm install
+npm run start
+```
+````
+
+```powershell title="🪟 PowerShell"
+npm install
+npm run start
+```
+
+### Windows Command Prompt
+
+````md
+```cmd
+npm install
+npm run start
+```
+````
+
+```cmd
+npm install
+npm run start
+```
+
+### Bash / Linux / macOS
+
+````md
+```bash
+npm install
+npm run start
+```
+````
+
+```bash
+npm install
+npm run start
+```
+
+### Generic shell
+
+If you don't care whether the reader uses Bash, PowerShell, or CMD:
+
+````md
+```shell
+npm install
+npm run start
+```
+````
+
+```shell
+npm install
+npm run start
+```
+
+But if you want to make it **explicit where the command should be executed**, I recommend putting the environment in the title:
+
+````md
+```powershell title="PowerShell — Windows"
+cd C:\Users\Adriano\project
+npm run dev
+```
+````
+
+```powershell title="PowerShell — Windows"
+cd C:\Users\Adriano\project
+npm run dev
+```
+
+or:
+
+````md
+```bash title="Terminal — Linux/macOS"
+cd ~/project
+npm run dev
+```
+````
+
+```bash title="Terminal — Linux/macOS"
+cd ~/project
+npm run dev
+```
+
+Docusaurus supports the `title="..."` code-block metadata, so this is particularly useful for teaching material.
+
+For example:
+
+````md
+### Install dependencies
+
+Run this in **PowerShell**:
+
+```powershell title="PowerShell"
+npm install
+```
+
+Then start Docusaurus:
+
+```powershell title="PowerShell"
+npm run start
+```
+````
+
+**My recommendation for your Docusaurus educational docs:** use the language identifier (`powershell`, `bash`, `cmd`, `python`, `perl`, etc.) **plus `title="..."` when the execution environment matters**. This makes it immediately clear to students _where_ to run the code.
