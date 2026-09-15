@@ -90,11 +90,12 @@ const navbarItems: NavbarItem[] = [
 
     // { to: "/blog", label: "Blog", position: "right" },
     // { href: "https://ruseleredu.github.io/stm32doc/assets/files/CT2026-330805e7bda31ab7e272d3b2b0c96cf3.pdf", label: "Calendário", position: "right" },
-    { to: "/pdf/CT2026.pdf", label: "Calendário", position: "right", target: '_blank' },
+    //{ to: "/pdf/CT2026.pdf", label: "Calendário", position: "right", target: '_blank' },
     // { href: "https://www.utfpr.edu.br/alunos/calendario", label: "Calendário", position: "right" },
+
     {
-        href: "https://ruseleredu.github.io/iiot-docs/espconnect/",
-        label: "ESPConnect",
+        href: "https://github.com/ruseleredu/mic-docs/issues",
+        label: "Issue",
         position: "right",
     },
     {
