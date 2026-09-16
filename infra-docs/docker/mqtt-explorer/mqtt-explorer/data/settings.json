@@ -5,7 +5,7 @@
       "certValidation": false,
       "clientId": "mqtt-explorer-d10ed33b",
       "id": "aec03d87-c5f4-431c-8b65-5e450f98ea48",
-      "name": "mosquitto.local",
+      "name": "host.docker.internal",
       "encryption": false,
       "subscriptions": [
         {
@@ -18,9 +18,71 @@
         }
       ],
       "type": "mqtt",
-      "host": "mosquitto",
+      "host": "host.docker.internal",
       "port": 1883,
       "protocol": "mqtt"
+    },
+    "588d9d4a-657b-44ff-b7ad-ffe855412908": {
+      "configVersion": 1,
+      "certValidation": true,
+      "clientId": "mqtt-explorer-5e92f19d",
+      "id": "588d9d4a-657b-44ff-b7ad-ffe855412908",
+      "name": "mqtt.adrianoruseler.com (elt73a)",
+      "encryption": false,
+      "subscriptions": [
+        {
+          "topic": "#",
+          "qos": 0
+        },
+        {
+          "topic": "$SYS/#",
+          "qos": 0
+        }
+      ],
+      "type": "mqtt",
+      "host": "mqtt.adrianoruseler.com",
+      "port": 1883,
+      "protocol": "mqtt",
+      "changeSet": {
+        "password": "elt73a"
+      },
+      "username": "elt73a",
+      "password": "elt73a"
+    },
+    "ff1609ea-b28f-4fa3-a6da-79e92d29b3fe": {
+      "configVersion": 1,
+      "certValidation": true,
+      "clientId": "mqtt-explorer-fb55b308",
+      "id": "ff1609ea-b28f-4fa3-a6da-79e92d29b3fe",
+      "name": "mqtt.adrianoruseler.com (elt85b)",
+      "encryption": false,
+      "password": "elt85b",
+      "username": "elt85b",
+      "subscriptions": [
+        {
+          "topic": "#",
+          "qos": 0
+        },
+        {
+          "topic": "$SYS/#",
+          "qos": 0
+        }
+      ],
+      "type": "mqtt",
+      "host": "mqtt.adrianoruseler.com",
+      "port": 1883,
+      "protocol": "mqtt",
+      "changeSet": {
+        "password": "elt85b"
+      }
     }
+  },
+  "Settings": {
+    "timeLocale": "pt-BR",
+    "topicOrder": "none",
+    "highlightTopicUpdates": true,
+    "valueRendererDisplayMode": "diff",
+    "selectTopicWithMouseOver": false,
+    "theme": "light"
   }
 }
