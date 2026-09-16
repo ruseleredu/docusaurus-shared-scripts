@@ -14,26 +14,18 @@ services:
       - ./mosquitto/log:/mosquitto/log
 
   mqtt-explorer:
-    image: ghcr.io/thomasnordquist/mqtt-explorer:latest
+    image: ruseler/mqtt-explorer:local
     container_name: mqtt-explorer
     restart: unless-stopped
-
     ports:
-      - "3000:3000"
+      - "3001:3000"
 
     environment:
       MQTT_EXPLORER_SKIP_AUTH: "true"
-      PORT: "3000"
-
-      # Automatically connect to Mosquitto
       MQTT_AUTO_CONNECT_HOST: mosquitto
       MQTT_AUTO_CONNECT_PORT: "1883"
 
     volumes:
-      - mqtt-explorer-data:/app/data
-
+      - ./mqtt-explorer/data:/app/data
     depends_on:
       - mosquitto
-
-volumes:
-  mqtt-explorer-data:
