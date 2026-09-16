@@ -50,7 +50,6 @@ services:
       - ./mqtt-explorer/data:/app/data
     depends_on:
       - mosquitto
-
 volumes:
   node-red-data:
 
