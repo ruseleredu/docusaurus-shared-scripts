@@ -7,6 +7,12 @@ export interface FileTreeProps {
     root?: string;
     /** Array de caminhos relativos com ações opcionais. Ex: ["wokwi.toml u", "Empty/Folder/", "..."] */
     files: string[];
+    /** Se verdadeiro, envolve a árvore em um elemento <details> para expandir/contrair */
+    details?: boolean;
+    /** Título do summary quando details for true. Se omitido, usa "Estrutura de arquivos: {root}" ou "Estrutura de arquivos" */
+    title?: string;
+    /** Define se o details inicia aberto (padrão: false) */
+    defaultOpen?: boolean;
 }
 
 interface TreeNode {
@@ -62,7 +68,6 @@ function buildTree(paths: string[]): TreeNode {
         const trimmed = rawPath.trim();
         if (!trimmed) return;
 
-        // Tratamento para linhas com reticências (...)
         if (trimmed === '...' || trimmed.startsWith('...')) {
             const key = `ellipsis_${Math.random()}`;
             treeRoot.children[key] = {
@@ -92,7 +97,6 @@ function buildTree(paths: string[]): TreeNode {
                 current.children[segment] = {
                     name: segment,
                     relativePath: accumulatedPath,
-                    // Se for explicitamente terminada com '/', mesmo o último segmento será uma pasta
                     isFolder: !isLast || isExplicitFolder,
                     children: {},
                 };
@@ -130,7 +134,6 @@ function RenderBranch({ nodes, copiedPath, onCopy }: { nodes: TreeNode[]; copied
                 const childNodes = Object.values(node.children);
                 const isCopied = copiedPath === node.relativePath;
 
-                // Renderização para Reticências (...)
                 if (node.isEllipsis) {
                     return (
                         <li key={index} style={{ margin: '0.15rem 0', lineHeight: '1.6rem' }}>
@@ -203,7 +206,13 @@ function RenderBranch({ nodes, copiedPath, onCopy }: { nodes: TreeNode[]; copied
     );
 }
 
-export default function FileTree({ root = '', files }: FileTreeProps): React.JSX.Element {
+export default function FileTree({
+    root = '',
+    files,
+    details = false,
+    title,
+    defaultOpen = false,
+}: FileTreeProps): React.JSX.Element {
     const [copiedPath, setCopiedPath] = useState<string | null>(null);
     const treeRoot = buildTree(files);
     const displayNodes = Object.values(treeRoot.children);
@@ -214,15 +223,11 @@ export default function FileTree({ root = '', files }: FileTreeProps): React.JSX
         setTimeout(() => setCopiedPath(null), 2000);
     };
 
-    return (
+    const treeContent = (
         <div style={{
-            margin: '1rem 0',
-            padding: '1rem',
-            borderRadius: 'var(--ifm-global-radius)',
-            border: '1px solid var(--ifm-color-emphasis-300)',
-            backgroundColor: 'var(--ifm-background-surface-color)',
             fontFamily: 'var(--ifm-font-family-monospace)',
-            fontSize: '0.9rem'
+            fontSize: '0.9rem',
+            marginTop: details ? '0.5rem' : '0',
         }}>
             {root && (
                 <div style={{ fontWeight: 'bold', marginBottom: '0.25rem' }}>
@@ -230,6 +235,44 @@ export default function FileTree({ root = '', files }: FileTreeProps): React.JSX
                 </div>
             )}
             <RenderBranch nodes={displayNodes} copiedPath={copiedPath} onCopy={handleCopy} />
+        </div>
+    );
+
+    if (details) {
+        const summaryTitle = title || (root ? `Estrutura de arquivos: ${root}` : 'Estrutura de arquivos');
+
+        return (
+            <details
+                open={defaultOpen}
+                style={{
+                    margin: '1rem 0',
+                    padding: '0.75rem 1rem',
+                    borderRadius: 'var(--ifm-global-radius)',
+                    border: '1px solid var(--ifm-color-emphasis-300)',
+                    backgroundColor: 'var(--ifm-background-surface-color)',
+                }}
+            >
+                <summary style={{
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    color: 'var(--ifm-color-primary-darker)',
+                }}>
+                    {summaryTitle}
+                </summary>
+                {treeContent}
+            </details>
+        );
+    }
+
+    return (
+        <div style={{
+            margin: '1rem 0',
+            padding: '1rem',
+            borderRadius: 'var(--ifm-global-radius)',
+            border: '1px solid var(--ifm-color-emphasis-300)',
+            backgroundColor: 'var(--ifm-background-surface-color)',
+        }}>
+            {treeContent}
         </div>
     );
 }
