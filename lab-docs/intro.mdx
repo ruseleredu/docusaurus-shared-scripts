@@ -40,24 +40,34 @@ import LabSubmit from "@site/src/components/LabSubmit";
 
 ## Estrutura do Laboratório XY
 
-`ActionType = 'edit' | 'add' | 'remove' | 'create';`
+`ActionType = 'create' | 'read' | 'update' | 'delete';`
 
 <FileTree
   root="labxy-grupo-x"
   files={[
-    ".github/workflows/grade.yml edit",
+    ".github/workflows/grade.yml u",
     ".gitignore",
     ".vscode/c_cpp_properties.json",
     ".vscode/extensions.json",
-    ".vscode/launch.json",
+    ".vscode/launch.json r",
     "README.md",
-    "diagram.json add",
+    "diagram.json c",
     "include/README",
-    "lib/README remove",
+    "lib/README d",
     "platformio.ini",
     "src/main.cpp",
     "test/README",
-    "wokwi.toml create",
+    "wokwi.toml c",
+  ]}
+/>
+
+<FileTree
+  root="labxy-grupo-x"
+  files={[
+    ".github/workflows/grade.yml d", // Delete (Remover)
+    "src/main.cpp r", // Read (Verificar)
+    "wokwi.toml u", // Update (Edite Aqui)
+    "diagram.json c", // Create (Criar Aqui)
   ]}
 />
 
@@ -356,9 +366,8 @@ pio test
 - `lib/` → private libraries
 - `test/` → unit tests (Unity)
 
-````
-
 **`.github/workflows/grade.yml`** (CI – compile only)
+
 ```yaml
 name: Build & Test
 
@@ -392,7 +401,7 @@ jobs:
       # Uncomment if you want native/unit tests in CI
       # - name: Run tests
       #   run: pio test -e native
-````
+```
 
 **`include/README`** and **`lib/README`** (PlatformIO placeholders)
 
@@ -515,4 +524,4 @@ echo "Private libraries go here" > lib/README
 | Unit tests on device | `pio test` (requires connected board)                                                                  |
 | Native tests         | Add a `[env:native]` environment if you want tests without hardware                                    |
 
-Would you like me to give you the **full ready-to-run script** already adapted for PlatformIO ESP32 (creating all `lab00-template` … `lab10-template`)?
+---

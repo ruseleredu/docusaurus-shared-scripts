@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 
-export type ActionType = 'edit' | 'add' | 'remove' | 'create';
+export type ActionType = 'create' | 'read' | 'update' | 'delete';
 
 export interface FileTreeProps {
     /** Nome da pasta raiz principal */
     root?: string;
-    /** Array de caminhos relativos com ações opcionais. Ex: ["wokwi.toml edite", ".github/workflows/grade.yml remove"] */
+    /** Array de caminhos relativos com ações opcionais. Ex: ["wokwi.toml u", ".github/workflows/grade.yml d"] */
     files: string[];
 }
 
@@ -18,15 +18,41 @@ interface TreeNode {
     children: Record<string, TreeNode>;
 }
 
-const ACTION_MAP: Record<string, { type: ActionType; defaultLabel: string; bg: string; color: string; border: string }> = {
-    edite: { type: 'edit', defaultLabel: 'Edite Aqui', bg: 'var(--ifm-color-warning-lightest)', color: 'var(--ifm-color-warning-darkest)', border: 'var(--ifm-color-warning)' },
-    edit: { type: 'edit', defaultLabel: 'Edite Aqui', bg: 'var(--ifm-color-warning-lightest)', color: 'var(--ifm-color-warning-darkest)', border: 'var(--ifm-color-warning)' },
-    adicione: { type: 'add', defaultLabel: 'Adicionar', bg: 'var(--ifm-color-success-lightest)', color: 'var(--ifm-color-success-darkest)', border: 'var(--ifm-color-success)' },
-    add: { type: 'add', defaultLabel: 'Adicionar', bg: 'var(--ifm-color-success-lightest)', color: 'var(--ifm-color-success-darkest)', border: 'var(--ifm-color-success)' },
-    crie: { type: 'create', defaultLabel: 'Criar Aqui', bg: 'var(--ifm-color-info-lightest)', color: 'var(--ifm-color-info-darkest)', border: 'var(--ifm-color-info)' },
+interface ActionConfig {
+    type: ActionType;
+    defaultLabel: string;
+    bg: string;
+    color: string;
+    border: string;
+}
+
+// Mapeamento extensível para CRUD (Aceita iniciais c, r, u, d e termos em PT/EN)
+const ACTION_MAP: Record<string, ActionConfig> = {
+    // CREATE (Adicionar / Criar)
+    c: { type: 'create', defaultLabel: 'Criar Aqui', bg: 'var(--ifm-color-info-lightest)', color: 'var(--ifm-color-info-darkest)', border: 'var(--ifm-color-info)' },
     create: { type: 'create', defaultLabel: 'Criar Aqui', bg: 'var(--ifm-color-info-lightest)', color: 'var(--ifm-color-info-darkest)', border: 'var(--ifm-color-info)' },
-    remove: { type: 'remove', defaultLabel: 'Remover', bg: 'var(--ifm-color-danger-lightest)', color: 'var(--ifm-color-danger-darkest)', border: 'var(--ifm-color-danger)' },
-    remover: { type: 'remove', defaultLabel: 'Remover', bg: 'var(--ifm-color-danger-lightest)', color: 'var(--ifm-color-danger-darkest)', border: 'var(--ifm-color-danger)' },
+    crie: { type: 'create', defaultLabel: 'Criar Aqui', bg: 'var(--ifm-color-info-lightest)', color: 'var(--ifm-color-info-darkest)', border: 'var(--ifm-color-info)' },
+    add: { type: 'create', defaultLabel: 'Adicionar', bg: 'var(--ifm-color-info-lightest)', color: 'var(--ifm-color-info-darkest)', border: 'var(--ifm-color-info)' },
+    adicione: { type: 'create', defaultLabel: 'Adicionar', bg: 'var(--ifm-color-info-lightest)', color: 'var(--ifm-color-info-darkest)', border: 'var(--ifm-color-info)' },
+
+    // READ (Verificar / Ler)
+    r: { type: 'read', defaultLabel: 'Verificar', bg: 'var(--ifm-color-primary-lightest)', color: 'var(--ifm-color-primary-darkest)', border: 'var(--ifm-color-primary)' },
+    read: { type: 'read', defaultLabel: 'Verificar', bg: 'var(--ifm-color-primary-lightest)', color: 'var(--ifm-color-primary-darkest)', border: 'var(--ifm-color-primary)' },
+    verify: { type: 'read', defaultLabel: 'Verificar', bg: 'var(--ifm-color-primary-lightest)', color: 'var(--ifm-color-primary-darkest)', border: 'var(--ifm-color-primary)' },
+    verifique: { type: 'read', defaultLabel: 'Verificar', bg: 'var(--ifm-color-primary-lightest)', color: 'var(--ifm-color-primary-darkest)', border: 'var(--ifm-color-primary)' },
+    leia: { type: 'read', defaultLabel: 'Ler', bg: 'var(--ifm-color-primary-lightest)', color: 'var(--ifm-color-primary-darkest)', border: 'var(--ifm-color-primary)' },
+
+    // UPDATE (Editar / Atualizar)
+    u: { type: 'update', defaultLabel: 'Edite Aqui', bg: 'var(--ifm-color-warning-lightest)', color: 'var(--ifm-color-warning-darkest)', border: 'var(--ifm-color-warning)' },
+    update: { type: 'update', defaultLabel: 'Edite Aqui', bg: 'var(--ifm-color-warning-lightest)', color: 'var(--ifm-color-warning-darkest)', border: 'var(--ifm-color-warning)' },
+    edit: { type: 'update', defaultLabel: 'Edite Aqui', bg: 'var(--ifm-color-warning-lightest)', color: 'var(--ifm-color-warning-darkest)', border: 'var(--ifm-color-warning)' },
+    edite: { type: 'update', defaultLabel: 'Edite Aqui', bg: 'var(--ifm-color-warning-lightest)', color: 'var(--ifm-color-warning-darkest)', border: 'var(--ifm-color-warning)' },
+
+    // DELETE (Remover / Deletar)
+    d: { type: 'delete', defaultLabel: 'Remover', bg: 'var(--ifm-color-danger-lightest)', color: 'var(--ifm-color-danger-darkest)', border: 'var(--ifm-color-danger)' },
+    delete: { type: 'delete', defaultLabel: 'Remover', bg: 'var(--ifm-color-danger-lightest)', color: 'var(--ifm-color-danger-darkest)', border: 'var(--ifm-color-danger)' },
+    remove: { type: 'delete', defaultLabel: 'Remover', bg: 'var(--ifm-color-danger-lightest)', color: 'var(--ifm-color-danger-darkest)', border: 'var(--ifm-color-danger)' },
+    remover: { type: 'delete', defaultLabel: 'Remover', bg: 'var(--ifm-color-danger-lightest)', color: 'var(--ifm-color-danger-darkest)', border: 'var(--ifm-color-danger)' },
 };
 
 function buildTree(paths: string[]): TreeNode {
