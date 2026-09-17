@@ -71,6 +71,50 @@ import LabSubmit from "@site/src/components/LabSubmit";
   ]}
 />
 
+A basic wokwi.toml file looks like this:
+
+<FileTree
+  root="lab02-grupo-x (git repo)"
+  files={["wokwi.toml c", "src/main.cpp"]}
+/>
+
+```toml title="wokwi.toml"
+[wokwi]
+version = 1
+firmware = '.pio/build/esp32dev/firmware.bin'
+elf = '.pio/build/esp32dev/firmware.elf'
+```
+
+<FileTree
+  root="lab03-grupo-p-main"
+  files={[
+    ".github/workflows/grade.yml d",
+    "Empty/Folder/", // Pasta Vazia (termina com /)
+    "src/main.cpp r",
+    "...", // Reticências
+    "wokwi.toml u",
+  ]}
+/>
+
+<FileTree
+  root="lab03-grupo-p-main"
+  files={[
+    ".github/workflows/grade.yml",
+    ".gitignore",
+    ".vscode/c_cpp_properties.json",
+    ".vscode/extensions.json",
+    ".vscode/launch.json",
+    "README.md",
+    "diagram.json",
+    "include/README",
+    "lib/README",
+    "platformio.ini",
+    "src/main.cpp",
+    "test/README",
+    "wokwi.toml",
+  ]}
+/>
+
 ## Como funciona a avaliação
 
 Nesta disciplina, **você entrega cada tarefa fazendo um commit**. Ao longo das aulas, os cartões **"Ponto de commit"** mostram exatamente o que salvar e quando.
