@@ -36,6 +36,31 @@ import LabSubmit from "@site/src/components/LabSubmit";
 
 <LabSubmit labName="labxy" />
 
+<LabStructure lab="XY" />
+
+## Estrutura do Laboratório XY
+
+`ActionType = 'edit' | 'add' | 'remove' | 'create';`
+
+<FileTree
+  root="labxy-grupo-x"
+  files={[
+    ".github/workflows/grade.yml edit",
+    ".gitignore",
+    ".vscode/c_cpp_properties.json",
+    ".vscode/extensions.json",
+    ".vscode/launch.json",
+    "README.md",
+    "diagram.json add",
+    "include/README",
+    "lib/README remove",
+    "platformio.ini",
+    "src/main.cpp",
+    "test/README",
+    "wokwi.toml create",
+  ]}
+/>
+
 ## Como funciona a avaliação
 
 Nesta disciplina, **você entrega cada tarefa fazendo um commit**. Ao longo das aulas, os cartões **"Ponto de commit"** mostram exatamente o que salvar e quando.
@@ -87,11 +112,21 @@ A mensagem **começa com o código da tarefa** (`T1:`, `T2:`, …). É por ela q
 
 ---
 
+## Logout do seu ambiente dev, git e gh
+
+import { GitLogOut } from "@site/src/components/InstructionsSite";
+
+<GitLogOut />
+
+---
+
 ## Tabela dos LABs com links internos {/* #tabela-dos-labs-com-links-internos */}
 
 <div style={{ display: "flex", justifyContent: "center" }}>
   <LabTable internal={true} />
 </div>
+
+---
 
 ## Tabela dos LABs com links externos {/* #tabela-dos-labs-com-links-externos */}
 
