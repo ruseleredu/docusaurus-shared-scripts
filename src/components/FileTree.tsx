@@ -5,7 +5,7 @@ export type ActionType = 'create' | 'read' | 'update' | 'delete';
 export interface FileTreeProps {
     /** Nome da pasta raiz principal */
     root?: string;
-    /** Array de caminhos relativos com ações opcionais. Ex: ["wokwi.toml u", ".github/workflows/grade.yml d"] */
+    /** Array de caminhos relativos com ações opcionais. Ex: ["wokwi.toml u", "Empty/Folder/", "..."] */
     files: string[];
 }
 
@@ -13,6 +13,7 @@ interface TreeNode {
     name: string;
     relativePath: string;
     isFolder: boolean;
+    isEllipsis?: boolean;
     action?: ActionType;
     customLabel?: string;
     children: Record<string, TreeNode>;
@@ -26,29 +27,28 @@ interface ActionConfig {
     border: string;
 }
 
-// Mapeamento extensível para CRUD (Aceita iniciais c, r, u, d e termos em PT/EN)
 const ACTION_MAP: Record<string, ActionConfig> = {
-    // CREATE (Adicionar / Criar)
+    // CREATE
     c: { type: 'create', defaultLabel: 'Criar Aqui', bg: 'var(--ifm-color-info-lightest)', color: 'var(--ifm-color-info-darkest)', border: 'var(--ifm-color-info)' },
     create: { type: 'create', defaultLabel: 'Criar Aqui', bg: 'var(--ifm-color-info-lightest)', color: 'var(--ifm-color-info-darkest)', border: 'var(--ifm-color-info)' },
     crie: { type: 'create', defaultLabel: 'Criar Aqui', bg: 'var(--ifm-color-info-lightest)', color: 'var(--ifm-color-info-darkest)', border: 'var(--ifm-color-info)' },
     add: { type: 'create', defaultLabel: 'Adicionar', bg: 'var(--ifm-color-info-lightest)', color: 'var(--ifm-color-info-darkest)', border: 'var(--ifm-color-info)' },
     adicione: { type: 'create', defaultLabel: 'Adicionar', bg: 'var(--ifm-color-info-lightest)', color: 'var(--ifm-color-info-darkest)', border: 'var(--ifm-color-info)' },
 
-    // READ (Verificar / Ler)
+    // READ
     r: { type: 'read', defaultLabel: 'Verificar', bg: 'var(--ifm-color-primary-lightest)', color: 'var(--ifm-color-primary-darkest)', border: 'var(--ifm-color-primary)' },
     read: { type: 'read', defaultLabel: 'Verificar', bg: 'var(--ifm-color-primary-lightest)', color: 'var(--ifm-color-primary-darkest)', border: 'var(--ifm-color-primary)' },
     verify: { type: 'read', defaultLabel: 'Verificar', bg: 'var(--ifm-color-primary-lightest)', color: 'var(--ifm-color-primary-darkest)', border: 'var(--ifm-color-primary)' },
     verifique: { type: 'read', defaultLabel: 'Verificar', bg: 'var(--ifm-color-primary-lightest)', color: 'var(--ifm-color-primary-darkest)', border: 'var(--ifm-color-primary)' },
     leia: { type: 'read', defaultLabel: 'Ler', bg: 'var(--ifm-color-primary-lightest)', color: 'var(--ifm-color-primary-darkest)', border: 'var(--ifm-color-primary)' },
 
-    // UPDATE (Editar / Atualizar)
+    // UPDATE
     u: { type: 'update', defaultLabel: 'Edite Aqui', bg: 'var(--ifm-color-warning-lightest)', color: 'var(--ifm-color-warning-darkest)', border: 'var(--ifm-color-warning)' },
     update: { type: 'update', defaultLabel: 'Edite Aqui', bg: 'var(--ifm-color-warning-lightest)', color: 'var(--ifm-color-warning-darkest)', border: 'var(--ifm-color-warning)' },
     edit: { type: 'update', defaultLabel: 'Edite Aqui', bg: 'var(--ifm-color-warning-lightest)', color: 'var(--ifm-color-warning-darkest)', border: 'var(--ifm-color-warning)' },
     edite: { type: 'update', defaultLabel: 'Edite Aqui', bg: 'var(--ifm-color-warning-lightest)', color: 'var(--ifm-color-warning-darkest)', border: 'var(--ifm-color-warning)' },
 
-    // DELETE (Remover / Deletar)
+    // DELETE
     d: { type: 'delete', defaultLabel: 'Remover', bg: 'var(--ifm-color-danger-lightest)', color: 'var(--ifm-color-danger-darkest)', border: 'var(--ifm-color-danger)' },
     delete: { type: 'delete', defaultLabel: 'Remover', bg: 'var(--ifm-color-danger-lightest)', color: 'var(--ifm-color-danger-darkest)', border: 'var(--ifm-color-danger)' },
     remove: { type: 'delete', defaultLabel: 'Remover', bg: 'var(--ifm-color-danger-lightest)', color: 'var(--ifm-color-danger-darkest)', border: 'var(--ifm-color-danger)' },
@@ -62,9 +62,23 @@ function buildTree(paths: string[]): TreeNode {
         const trimmed = rawPath.trim();
         if (!trimmed) return;
 
+        // Tratamento para linhas com reticências (...)
+        if (trimmed === '...' || trimmed.startsWith('...')) {
+            const key = `ellipsis_${Math.random()}`;
+            treeRoot.children[key] = {
+                name: '...',
+                relativePath: '',
+                isFolder: false,
+                isEllipsis: true,
+                children: {},
+            };
+            return;
+        }
+
         const parts = trimmed.split(/\s+/);
         const pathPart = parts[0];
         const rawAction = parts[1]?.toLowerCase();
+        const isExplicitFolder = pathPart.endsWith('/');
 
         const segments = pathPart.split('/').filter(Boolean);
         let current = treeRoot;
@@ -78,7 +92,8 @@ function buildTree(paths: string[]): TreeNode {
                 current.children[segment] = {
                     name: segment,
                     relativePath: accumulatedPath,
-                    isFolder: !isLast,
+                    // Se for explicitamente terminada com '/', mesmo o último segmento será uma pasta
+                    isFolder: !isLast || isExplicitFolder,
                     children: {},
                 };
             }
@@ -114,6 +129,18 @@ function RenderBranch({ nodes, copiedPath, onCopy }: { nodes: TreeNode[]; copied
                 const actionCfg = node.action ? Object.values(ACTION_MAP).find(a => a.type === node.action) : null;
                 const childNodes = Object.values(node.children);
                 const isCopied = copiedPath === node.relativePath;
+
+                // Renderização para Reticências (...)
+                if (node.isEllipsis) {
+                    return (
+                        <li key={index} style={{ margin: '0.15rem 0', lineHeight: '1.6rem' }}>
+                            <span style={{ color: 'var(--ifm-color-emphasis-500)', fontFamily: 'monospace' }}>
+                                {prefix}
+                            </span>
+                            <span style={{ color: 'var(--ifm-color-emphasis-600)', fontStyle: 'italic' }}>...</span>
+                        </li>
+                    );
+                }
 
                 return (
                     <li key={node.name} style={{ margin: '0.15rem 0', lineHeight: '1.6rem' }}>
