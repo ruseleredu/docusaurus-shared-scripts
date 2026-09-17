@@ -3,11 +3,8 @@ title: Laboratório 03
 sidebar_position: 6
 ---
 
-import LabTable from "@site/src/components/LabTable";
-import LabTeamMembers from "@site/src/components/LabTeamMembers";
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
-import CommitPoint from "@site/src/components/CommitPoint";
 
 # Laboratório 03
 
@@ -19,7 +16,7 @@ import CommitPoint from "@site/src/components/CommitPoint";
 
 ---
 
-## Checklist — Espressif 32: development platform for PlatformIO
+## Checklist — PlatformIO IDE e Logging no ESP32
 
 - [ ] Verificar `git --version`
 - [ ] Abrir o VS Code
@@ -362,7 +359,8 @@ Em `platformio.ini`: `build_flags = -DCORE_DEBUG_LEVEL=<0..5>`
 Se você esquecer o `-DCORE_DEBUG_LEVEL`, o valor padrão costuma ser `0` (NONE) e **nada aparece**, mesmo com o código correto. Se seus logs sumiram, comece a investigação por aqui.
 :::
 
-```ini; =====================================================================
+```ini
+; =====================================================================
 ; Configurações Globais / Padrão (Herdadas por todos os ambientes)
 ; =====================================================================
 [env]

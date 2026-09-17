@@ -1,6 +1,7 @@
 {
   "moodleBaseUrl": "https://moodle.utfpr.edu.br",
   "labs": {
+    "labxy": { "cmid": 2167691, "title": "Laboratório XY" },
     "lab00": { "cmid": 2167691, "title": "Laboratório 00" },
     "lab01": { "cmid": 2167697, "title": "Laboratório 01" },
     "lab02": { "cmid": 2167698, "title": "Laboratório 02" },
