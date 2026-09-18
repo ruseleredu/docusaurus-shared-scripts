@@ -462,3 +462,58 @@ tags = ["wifi", "mqtt"]
 ---
 
 _Fim da aula._
+
+## Formatos de arquivo — material do laboratório
+
+Arquivos de apoio da aula "Formatos de arquivo de configuração".
+
+### `quebrados/`
+
+Três arquivos com **um erro de sintaxe cada**, para você consertar no projeto integrador:
+
+- `dados.json` — tem comentário e vírgulas sobrando (JSON não permite).
+- `config.yml` — usa **tabulação** na indentação e falta espaço depois de `:`.
+- `projeto.toml` — tem uma string **sem aspas**.
+
+Depois de consertar, valide:
+
+```bash
+python -m json.tool quebrados/dados.json
+python -c "import yaml; yaml.safe_load(open('quebrados/config.yml'))"
+python -c "import tomllib; tomllib.load(open('quebrados/projeto.toml','rb'))"
+```
+
+Se um comando não imprimir erro, o arquivo está válido.
+
+---
+
+```json title="quebrados/dados.json"
+{
+  // configuracao do dispositivo
+  "nome": "esp32",
+  "porta": 1883,
+  "tags": ["wifi", "mqtt"]
+}
+```
+
+---
+
+```yml title="quebrados/projeto.toml"
+servico:
+	nome: esp32
+porta:1883
+tags:
+  - wifi
+  - mqtt
+```
+
+---
+
+```toml title="quebrados/projeto.toml"
+[projeto]
+nome = esp32
+porta = 1883
+tags = ["wifi", "mqtt"]
+```
+
+---

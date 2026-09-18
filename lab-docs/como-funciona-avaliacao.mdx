@@ -62,6 +62,60 @@ A mensagem **começa com o código da tarefa** (`T1:`, `T2:`, …). É por ela q
 
 ---
 
+## Errei o commit, e agora?
+
+Fique tranquilo: a correção sempre usa o commit **`Tn:` mais recente** de cada tarefa. Ou seja, na maioria dos casos você **não precisa desfazer nada** — é só fazer um **commit novo**. "Refazer" é mais seguro que "desfazer".
+
+:::tip[Regra de ouro]
+Errou algo? Faça um **novo commit** com o mesmo token (`T3: ...`). O mais recente vale.
+:::
+
+**1) Errei a mensagem (token errado ou esqueci o `Tn:`), mas o conteúdo já está certo**
+
+O trabalho está salvo, só faltou a etiqueta. Um commit vazio recria o marcador no estado atual:
+
+```bash
+git commit --allow-empty -m "T3: descricao certa"
+git push
+```
+
+**2) Esqueci um arquivo ou o conteúdo estava errado**
+
+Corrija e faça um **novo** commit com o mesmo token:
+
+```bash
+git add .
+git commit -m "T3: descricao certa"
+git push
+```
+
+**3) Foi o último commit e eu ainda NÃO dei `push`**
+
+Aí dá para corrigir o próprio commit com `--amend`:
+
+```bash
+git commit --amend -m "T3: mensagem corrigida"   # so a mensagem
+# ou, para incluir um arquivo esquecido:
+git add arquivo_esquecido
+git commit --amend --no-edit
+```
+
+### E o `reset`?
+
+Quase nunca é necessário para a avaliação. **Evite `git reset --hard`** — ele apaga trabalho. O único uso tranquilo é desfazer o último commit **local**, antes do push, para refazê-lo:
+
+```bash
+git reset --soft HEAD~1   # desfaz o commit, mantem as mudancas prontas para recommitar
+```
+
+:::danger[Nunca use `push --force` no repositório do grupo]
+`--amend` e `reset` reescrevem a história e exigiriam `git push --force` para enviar — isso pode **apagar o trabalho dos colegas**. Em repositório compartilhado, a regra é: **sempre um commit novo, nunca force-push.**
+:::
+
+Um alívio: como cada tarefa é avaliada no **estado congelado do seu commit `Tn:`**, editar o mesmo arquivo depois (em outra tarefa) **não estraga** as tarefas anteriores.
+
+---
+
 ## Para instrutores — cartão para colar no início de cada lab
 
 Cole este `:::info` de 4 linhas no topo de cada aula (ele resume o essencial e aponta para esta página):
