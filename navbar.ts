@@ -33,18 +33,18 @@ const navbarItems: NavbarItem[] = [
         position: "left",
         label: "Tutorial",
     },
-    {
-        label: "UTFPR",
-        to: "/utfpr/about", // Link to a page in your UTFPR docs
-        type: "dropdown",
-        position: "left",
-        items: [
-            {
-                to: "/utfpr/ELT85B/folder", // Link to a page in your UTFPR docs
-                label: "ELT85B - IIoT",
-            },
-        ],
-    },
+    /*  {
+          label: "UTFPR",
+          to: "/utfpr/about", // Link to a page in your UTFPR docs
+          type: "dropdown",
+          position: "left",
+          items: [
+              {
+                  to: "/utfpr/ELT85B/folder", // Link to a page in your UTFPR docs
+                  label: "ELT85B - IIoT",
+              },
+          ],
+      }, */
     {
         label: "Infra",
         to: "/infra/intro", // Link to a page in your infra docs
@@ -57,62 +57,62 @@ const navbarItems: NavbarItem[] = [
             },
         ],
     },
-    {
-        label: "ESP32",
-        to: "/esp32/intro", // Link to a page in your ESP32 docs
-        type: "dropdown",
-        position: "left",
-        items: [
-            {
-                to: "/esp32/category/esp32-devkitc", // Link to a page in your esp32 docs
-                label: "DevKitC",
-            },
-            {
-                href: "https://www.espressif.com/en/products/socs/esp32", // External link to ESP32 official page
-                label: "ESP32 Official Page",
-            },
-            {
-                href: "https://docs.wokwi.com/guides/esp32", // External link to ESP32 official page
-                label: "ESP32 Simulation Guide",
-            },
-        ],
-    },
-    {
-        label: "IoT",
-        to: "/iot/intro", // Link to a page in your ESP32 docs
-        type: "dropdown",
-        position: "left",
-        items: [
-            {
-                to: "/iot/intro", // Link to a page in your iot docs
-                label: "Open-Source IoT Platform",
-            },
-            {
-                to: "/iot/category/node-red", // Link to a page in your iot docs
-                label: "Node-RED",
-            },
-            {
-                to: "/iot/category/thingsboard", // Link to a page in your iot docs
-                label: "ThingsBoard",
-            },
-            {
-                to: "/iot/category/openremote", // Link to a page in your iot docs
-                label: "OpenRemote",
-            },
-            {
-                to: "/iot/category/eclipse-iot", // Link to a page in your iot docs
-                label: "Eclipse IoT",
-            },
-            {
-                to: "/iot/category/balena", // Link to a page in your iot docs
-                label: "Balena",
-            },
-            {
-                to: "/iot/category/mainflux", // Link to a page in your iot docs
-                label: "Mainflux",
-            },
-        ],
-    },
+    /* {
+         label: "ESP32",
+         to: "/esp32/intro", // Link to a page in your ESP32 docs
+         type: "dropdown",
+         position: "left",
+         items: [
+             {
+                 to: "/esp32/category/esp32-devkitc", // Link to a page in your esp32 docs
+                 label: "DevKitC",
+             },
+             {
+                 href: "https://www.espressif.com/en/products/socs/esp32", // External link to ESP32 official page
+                 label: "ESP32 Official Page",
+             },
+             {
+                 href: "https://docs.wokwi.com/guides/esp32", // External link to ESP32 official page
+                 label: "ESP32 Simulation Guide",
+             },
+         ],
+     }, */
+    /* {
+         label: "IoT",
+         to: "/iot/intro", // Link to a page in your ESP32 docs
+         type: "dropdown",
+         position: "left",
+         items: [
+             {
+                 to: "/iot/intro", // Link to a page in your iot docs
+                 label: "Open-Source IoT Platform",
+             },
+             {
+                 to: "/iot/category/node-red", // Link to a page in your iot docs
+                 label: "Node-RED",
+             },
+             {
+                 to: "/iot/category/thingsboard", // Link to a page in your iot docs
+                 label: "ThingsBoard",
+             },
+             {
+                 to: "/iot/category/openremote", // Link to a page in your iot docs
+                 label: "OpenRemote",
+             },
+             {
+                 to: "/iot/category/eclipse-iot", // Link to a page in your iot docs
+                 label: "Eclipse IoT",
+             },
+             {
+                 to: "/iot/category/balena", // Link to a page in your iot docs
+                 label: "Balena",
+             },
+             {
+                 to: "/iot/category/mainflux", // Link to a page in your iot docs
+                 label: "Mainflux",
+             },
+         ],
+     }, */
     {
         to: "/ead/intro", // Link to a page in your EaD docs
         label: "EaD",
