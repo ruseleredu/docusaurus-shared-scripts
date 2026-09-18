@@ -4,25 +4,30 @@ description: Introdução as atividades de laboratório.
 sidebar_position: 1
 ---
 
-## Configuração do ambiente de desenvolvimento
+## Ambiente de desenvolvimento
 
-import { DevTools } from "@site/src/components/InstructionsSite";
+### Configuração do ambiente de desenvolvimento
+
+import {
+  DevTools,
+  GitConfig,
+  VerifyDev1,
+  GitLogOut,
+} from "@site/src/components/InstructionsSite";
 
 <DevTools />
 
-Verifique o seu ambiente de desenvolvimento, git, gh e code:
-
-import { VerifyDev1 } from "@site/src/components/InstructionsSite";
-
-<VerifyDev1 />
-
-Configure o git
-
-import { GitConfig } from "@site/src/components/InstructionsSite";
+### Configure o git
 
 <GitConfig />
 
-- [Git Cheat Sheet](https://training.github.com/downloads/github-git-cheat-sheet.pdf)
+### Status do git, gh e code:
+
+<VerifyDev1 />
+
+### Logout
+
+<GitLogOut />
 
 ## Clone o repositório inicial do LABXY (Exemplo)
 
@@ -181,14 +186,6 @@ A mensagem **começa com o código da tarefa** (`T1:`, `T2:`, …). É por ela q
 - Compile/teste **antes** de commitar.
 - Use **exatamente** a mensagem do cartão (o botão de copiar já traz o código certo).
 - Fez os commits na ordem `T1`, `T2`, …? Ótimo — é assim que a numeração casa com a correção.
-
----
-
-## Logout do seu ambiente dev, git e gh
-
-import { GitLogOut } from "@site/src/components/InstructionsSite";
-
-<GitLogOut />
 
 ---
 
