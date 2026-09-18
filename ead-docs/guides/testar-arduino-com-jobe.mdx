@@ -96,15 +96,21 @@ Este guia acompanha uma pasta `jobe-arduino/`:
 
 ```text
 jobe-arduino/
-├── arduino-mock/Arduino.h      # o mock (bit macros, Serial->stdout, GPIO no-op...)
-├── harness/harness_funcao.cpp  # nível A: chama a funcao lendo o stdin
-├── harness/driver_sketch.cpp   # nível B: chama setup() uma vez
-├── jobe_test.py                # driver: monta o fonte, roda no Jobe (ou g++), corrige
-├── sol.cpp                     # exemplo de resposta do aluno
-└── tests.json                  # casos: [{input, expected}]
+├── arduino-mock/
+│   ├── Arduino.h             # bit macros, String, Serial->stdout, pinos, millis...
+│   ├── WiFi.h                # WiFiClient + objeto WiFi (status, localIP, RSSI, MAC)
+│   └── PubSubClient.h        # mock MQTT: registra publish/subscribe, injeta mensagens
+├── harness/
+│   ├── harness_funcao.cpp    # nivel A: chama a funcao lendo o stdin
+│   ├── driver_sketch.cpp     # nivel B: chama setup() uma vez
+│   ├── harness_payload.cpp   # MQTT: imprime o payload montado pelo aluno
+│   └── harness_callback.cpp  # MQTT: injeta um comando e imprime o estado do LED
+├── exemplos/                 # solucoes + tests.json de exemplo (payload, callback)
+├── jobe_test.py              # driver: monta o fonte, roda no Jobe (ou g++), corrige
+├── sol.cpp / tests.json      # exemplo de bits
 ```
 
-O `jobe_test.py` tem um modo **`--local`** que usa o `g++` da sua máquina em vez do Jobe — ideal para desenvolver os testes offline (o resultado é o mesmo que o Jobe daria).
+O `jobe_test.py` aceita **vários** `--mock` (combinados num fonte só) e tem o modo **`--local`** (usa `g++`, sem precisar de Jobe no ar).
 
 <Tabs>
 <TabItem value="local" label="Testar local (g++)" default>
@@ -146,6 +152,93 @@ Aluno com erro mostra `esperado` vs `obtido`; aluno que não compila mostra a me
 
 ---
 
+## Mock do PubSubClient (lógica de MQTT)
+
+Publicar/assinar de verdade precisa de rede e broker. Para testar **a lógica** — _o que_ o aluno publica e _como_ reage a uma mensagem — o mock do `PubSubClient` **não abre conexão**: ele **registra** os `publish`/`subscribe` e deixa você **injetar** uma mensagem recebida para disparar o callback.
+
+Helpers de teste do mock (não existem no `PubSubClient` real):
+
+| Helper                         | Para quê                                                         |
+| ------------------------------ | ---------------------------------------------------------------- |
+| `mock_inject(topico, payload)` | dispara o callback do aluno como se tivesse chegado uma mensagem |
+| `mock_lastPayload(topico)`     | último payload publicado naquele tópico                          |
+| `mock_publishedTo(topico)`     | `true` se algo foi publicado no tópico                           |
+| `mock_subscribedTo(topico)`    | `true` se o aluno assinou o tópico                               |
+| `mock_pin(pino)`               | estado atual de um pino (para conferir o LED do callback)        |
+
+### Exemplo A — o payload da telemetria
+
+O aluno escreve uma função que **monta** o JSON (lógica pura de `String`, nem precisa do MQTT):
+
+```cpp title="payload_sol.cpp"
+#include <Arduino.h>
+String montaPayload(int n, float temp) {
+  return String("{\"n\":") + n + ",\"temp\":" + temp + "}";
+}
+```
+
+```cpp title="harness_payload.cpp"
+int main() {
+  int n; double temp;
+  if (scanf("%d %lf", &n, &temp) != 2) return 1;
+  Serial.println(montaPayload(n, (float)temp));   // imprime o payload
+  return 0;
+}
+```
+
+```bash
+python jobe_test.py --local --mock arduino-mock/Arduino.h \
+  --student payload_sol.cpp --harness harness_payload.cpp --tests payload_tests.json
+```
+
+Casos: `1 26.0` → `{"n":1,"temp":26.00}`; `7 30.5` → `{"n":7,"temp":30.50}`.
+
+### Exemplo B — o callback reage a `on`/`off`
+
+O aluno escreve o callback; o harness **injeta** um comando e imprime o estado do LED:
+
+```cpp title="callback_sol.cpp"
+#include <WiFi.h>
+#include <PubSubClient.h>
+const int LED = 2;
+void aoReceber(char* topico, byte* payload, unsigned int tam) {
+  String msg;
+  for (unsigned int i = 0; i < tam; i++) msg += (char)payload[i];
+  if (msg == "on")  digitalWrite(LED, HIGH);
+  if (msg == "off") digitalWrite(LED, LOW);
+}
+```
+
+```cpp title="harness_callback.cpp"
+WiFiClient _c; PubSubClient _mqtt(_c);
+int main() {
+  char cmd[64];
+  if (scanf("%63s", cmd) != 1) return 1;
+  _mqtt.setCallback(aoReceber);
+  _mqtt.mock_inject("elt85b/grupo-a/comando", cmd);   // simula mensagem recebida
+  printf("%d\n", mock_pin(2));                          // estado do LED
+  return 0;
+}
+```
+
+```bash
+python jobe_test.py --local \
+  --mock arduino-mock/Arduino.h --mock arduino-mock/WiFi.h --mock arduino-mock/PubSubClient.h \
+  --student callback_sol.cpp --harness harness_callback.cpp --tests callback_tests.json
+```
+
+Casos: `on` → `1`; `off` → `0`.
+
+:::tip[Projete para testar]
+Para o Jobe conseguir avaliar, peça funções **testáveis**: `montaPayload(n, temp)` (retorna a String) e um callback `aoReceber(...)` separado — em vez de tudo embutido no `loop()`. Isso melhora o código **e** viabiliza a correção automática.
+:::
+
+:::note[O que o mock cobre]
+`publish`, `subscribe`, `connect` (inclusive com Last Will), `state`, `loop` e o disparo do callback. Ele **não** fala com broker nem valida a rede — para o _end-to-end_ real (WiFi + broker), use o ESP32 físico ou o Wokwi com a stack Docker.
+:::
+
+---
+
 ## Integração com o autograder do curso
 
 Isto encaixa como um novo tipo de check no `grade.py`: em vez de só `contem`/`compila`, um check **`jobe`** que **executa** o código do aluno e confere a saída.
@@ -174,280 +267,3 @@ Para tudo que precisa de hardware de verdade, o caminho continua sendo **`pio ru
 ---
 
 _Guia — testar código Arduino no Jobe._
-
-# jobe-arduino
-
-Essa é a pergunta certa e tem uma resposta honesta com uma fronteira clara. O ponto central: **o Jobe executa no compilador do host (g++), não no ESP32** — então firmware de verdade (WiFi, pinos, timing) não roda lá. Mas boa parte do que os labs avaliam é **lógica pura em C/C++** (bits, estruturas de controle, tipos), e isso _dá_ para rodar no Jobe — desde que você **substitua o `Arduino.h` por um mock**.
-
-Deixa eu validar a técnica de verdade compilando com g++ aqui (é exatamente o que o Jobe faria), antes de te entregar o mock + harness + driver.Tier A funciona. Agora o Tier B: um **sketch completo** com `setup()`/`Serial`, compilado com o mock + um `main()` driver que chama `setup()` — captura o `Serial` como stdout.Ambos os tiers funcionam. Um detalhe do Jobe: ele compila **um** arquivo `sourcecode` (os arquivos de apoio não são linkados automaticamente). Então o padrão é montar **um** fonte que faz `#include` do código do aluno. Vou validar esse formato de translation-unit único para o Tier B (é como o Jobe realmente compila).Validado o padrão do Jobe (um `sourcecode` que inclui o mock + código do aluno) e o caso de erro de compilação (vai para `cmpinfo`, outcome 11). Agora entrego o mock, um driver Python (com modo `--local` via g++ para você testar offline — e para eu validar aqui) e o guia. Primeiro o mock e o driver.Agora testo o driver de ponta a ponta com `--local` (que replica o que o Jobe faz), incluindo o caso de aluno com `#include <Arduino.h>` (o driver remove e injeta o mock):O driver funciona de ponta a ponta: aluno correto → 3/3 (exit 0); com bug → mostra esperado vs. obtido (exit 1); sem compilar → erro de compilação (o que iria no `cmpinfo`/outcome 11 no Jobe). Vou limpar os arquivos de teste e escrever o guia.Tudo validado (MDX limpo, driver compila).
-
-## Resposta direta
-
-O Jobe roda no `g++` do host, **não** no ESP32 — então a estratégia depende do que é o código:
-
-- **Lógica pura** (bits, operadores, controle, tipos, funções): **dá para rodar no Jobe**, trocando o `Arduino.h` real por um **mock** que implementa as macros de bit e um `Serial` que escreve no `stdout`.
-- **Firmware real** (WiFi, GPIO, timing, MQTT): **não** roda no Jobe — isso é `pio run` (compila) + **Wokwi** (executa).
-
-## A receita (validada de verdade)
-
-Testei o fluxo inteiro compilando com `g++` aqui — exatamente o que o Jobe faz:
-
-1. **Mock `Arduino.h`** — `bit`/`bitRead`/`bitSet`/`highByte`/`lowByte`, constantes (`HIGH`, `LED_BUILTIN`, `HEX`…), GPIO no-op, `millis`/`delay` falsos e `Serial`→`stdout`.
-2. **Um único fonte** = mock + código do aluno (o driver **remove** o `#include <Arduino.h>` dele) + harness. É assim que o Jobe compila (um `sourcecode` só).
-3. **POST** para `/restapi/runs` com `language_id: "cpp"` e `input` (stdin do caso).
-4. Passou se `outcome == 15` **e** o `stdout` bate; se `outcome == 11`, mostra o `cmpinfo`.
-
-Provei os três cenários no `jobe_test.py --local`: aluno correto → 3/3; com bug → mostra esperado vs. obtido; sem compilar → erro de compilação. O include `<Arduino.h>` do aluno é removido e o mock injetado automaticamente.
-
-## O que entreguei em `jobe-arduino/`
-
-- `arduino-mock/Arduino.h` — o mock (testado com o lab de bits: `reg=0x81`, `hi=AB`/`lo=CD`).
-- `jobe_test.py` — driver que monta o fonte, roda no **Jobe** (`--jobe URL`) ou no **g++ local** (`--local`, para desenvolver sem Jobe), corrige por `stdout` e sai com código ≠ 0 se algum caso falhar (pronto para CI). Usa só `urllib` (sem dependências).
-- `harness/harness_funcao.cpp` (nível A) e `harness/driver_sketch.cpp` (nível B), `sol.cpp` e `tests.json` de exemplo.
-
-## Integração e limites
-
-No guia mostro como isso vira um check **`jobe`** no seu `grade.py` (executa o código do aluno no estado do commit e confere a saída — avalia _comportamento_, não só presença de texto, sem instalar compiladores no runner). E deixo os limites honestos: o mock não simula hardware (`digitalRead` fixo, `millis` falso), serve para lógica e saída serial; e cuidado com tamanho de tipos (o host é 64 bits — fixe `int32_t`/`uint8_t` quando o exercício depender do tamanho do ESP32).
-
-Se quiser, o próximo passo é eu **implementar o check `jobe` no `grade.py`** (com a lógica já testada aqui) e adicionar o `jobeinabox` como serviço no seu `docker-compose.yml`, para o Jobe subir junto da stack e o autograder usá-lo.
-
-### O mock (bit macros, Serial->stdout, GPIO no-op...) `arduino-mock/Arduino.h`
-
-```cpp
-#ifndef ARDUINO_MOCK_H
-#define ARDUINO_MOCK_H
-#include <cstdint>
-#include <cstdio>
-#include <string>
-typedef uint8_t byte;
-typedef bool boolean;
-#define HIGH 1
-#define LOW 0
-#define INPUT 0
-#define OUTPUT 1
-#define INPUT_PULLUP 2
-#define LED_BUILTIN 2
-#define DEC 10
-#define HEX 16
-#define OCT 8
-#define BIN 2
-#define bit(b) (1UL << (b))
-#define bitRead(v,b) (((v) >> (b)) & 0x01)
-#define bitSet(v,b) ((v) |= (1UL << (b)))
-#define bitClear(v,b) ((v) &= ~(1UL << (b)))
-#define bitWrite(v,b,x) ((x) ? bitSet(v,b) : bitClear(v,b))
-#define highByte(w) ((uint8_t)((w) >> 8))
-#define lowByte(w) ((uint8_t)((w) & 0xff))
-inline void pinMode(int,int){}
-inline void digitalWrite(int,int){}
-inline int  digitalRead(int){return HIGH;}
-inline unsigned long millis(){static unsigned long t=0;return t+=1;}
-inline void delay(unsigned long){}
-struct SerialMock {
-  void begin(long){}
-  void print(const char*s){fputs(s,stdout);}
-  void print(char c){putchar(c);}
-  void print(int v,int base=DEC){pb((long)v,base);}
-  void print(long v,int base=DEC){pb(v,base);}
-  void print(unsigned int v,int base=DEC){pb((long)v,base);}
-  void print(unsigned long v,int base=DEC){pb((long)v,base);}
-  void print(double v){printf("%.2f",v);}
-  void print(double v,int d){printf("%.*f",d,v);}
-  void println(){putchar('\n');}
-  void println(const char*s){fputs(s,stdout);putchar('\n');}
-  template<class T> void println(T v){print(v);putchar('\n');}
-  template<class T> void println(T v,int base){print(v,base);putchar('\n');}
-private:
-  void pb(long v,int base){
-    if(base==HEX){printf("%lX",(unsigned long)v);}
-    else if(base==OCT){printf("%lo",(unsigned long)v);}
-    else if(base==BIN){unsigned long u=(unsigned long)v; if(!u){putchar('0');return;} char b[65];int i=0; while(u){b[i++]='0'+(u&1);u>>=1;} while(i--)putchar(b[i]);}
-    else printf("%ld",v);
-  }
-};
-static SerialMock Serial;
-#endif
-```
-
-### Nível A: chama a funcao lendo o stdin `harness/harness_funcao.cpp`
-
-```cpp
-// Harness Tier A: testa UMA funcao do aluno lendo a entrada do stdin.
-// Ajuste conforme a assinatura da funcao avaliada.
-int main() {
-  int n;
-  if (scanf("%d", &n) != 1) return 1;
-  printf("%d\n", ehPar((uint8_t)n) ? 1 : 0);
-  return 0;
-}
-```
-
-### Nível B: chama setup() uma vez `harness/driver_sketch.cpp`
-
-```cpp
-// Harness Tier B: emula o "core" do Arduino chamando setup() uma vez.
-// Para exercitar o loop(), troque por: setup(); for(int i=0;i<5;i++) loop();
-int main() {
-  setup();
-  return 0;
-}
-```
-
-### Driver: monta o fonte, roda no Jobe (ou g++), corrige `jobe_test.py`
-
-```python
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-jobe_test.py — testa codigo estilo Arduino (PlatformIO) SEM Moodle.
-
-Monta um unico fonte C++ = mock Arduino.h + codigo do aluno (sem o include de
-Arduino) + harness, e o executa:
-  - no sandbox Jobe (POST /jobe/index.php/restapi/runs), ou
-  - localmente com g++ (--local), util para desenvolver sem um Jobe no ar.
-
-Cada caso de teste fornece a entrada (stdin) e a saida esperada (stdout).
-A funcao/sketch passa quando outcome == 15 (OK) e o stdout bate.
-
-Uso:
-  # local (usa g++; nao precisa de Jobe)
-  python jobe_test.py --local --mock arduino-mock/Arduino.h \\
-      --student sol.cpp --harness harness/harness_funcao.cpp --tests tests.json
-
-  # via Jobe
-  python jobe_test.py --jobe http://localhost:4000 --mock arduino-mock/Arduino.h \\
-      --student sol.cpp --harness harness/harness_funcao.cpp --tests tests.json
-
-tests.json:
-  [ {"input": "4\\n", "expected": "1\\n"},
-    {"input": "7\\n", "expected": "0\\n"} ]
-"""
-import argparse
-import json
-import re
-import subprocess
-import sys
-import tempfile
-import os
-import urllib.request
-import urllib.error
-from pathlib import Path
-
-OK = 15  # outcome de sucesso do Jobe
-
-# Remove os includes do Arduino (o mock ja provê tudo em um unico fonte).
-INCLUDE_ARDUINO = re.compile(r'^\s*#\s*include\s*[<"]\s*Arduino\.h\s*[>"]\s*$', re.M)
-
-def build_source(mock_path, student_path, harness_path):
-    mock = Path(mock_path).read_text(encoding="utf-8")
-    aluno = Path(student_path).read_text(encoding="utf-8")
-    aluno = INCLUDE_ARDUINO.sub("// (include de Arduino.h removido pelo mock)", aluno)
-    harness = Path(harness_path).read_text(encoding="utf-8")
-    return f"{mock}\n// ===== codigo do aluno =====\n{aluno}\n// ===== harness =====\n{harness}\n"
-
-# ---------- execução via Jobe ----------
-def run_jobe(jobe_url, source, stdin, apikey=None, language="cpp"):
-    url = jobe_url.rstrip("/") + "/jobe/index.php/restapi/runs"
-    body = json.dumps({"run_spec": {
-        "language_id": language,
-        "sourcecode": source,
-        "input": stdin,
-    }}).encode("utf-8")
-    headers = {"Content-Type": "application/json"}
-    if apikey:
-        headers["X-API-KEY"] = apikey
-    req = urllib.request.Request(url, data=body, headers=headers, method="POST")
-    try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            r = json.loads(resp.read().decode("utf-8"))
-    except urllib.error.HTTPError as e:
-        return {"outcome": -1, "stdout": "", "cmpinfo": "", "stderr": f"HTTP {e.code}: {e.read().decode('utf-8', 'replace')}"}
-    except Exception as e:  # noqa: BLE001
-        return {"outcome": -1, "stdout": "", "cmpinfo": "", "stderr": str(e)}
-    return {"outcome": r.get("outcome"), "stdout": r.get("stdout", ""),
-            "cmpinfo": r.get("cmpinfo", ""), "stderr": r.get("stderr", "")}
-
-# ---------- execução local (g++), para dev sem Jobe ----------
-def run_local(source, stdin):
-    with tempfile.TemporaryDirectory() as d:
-        src = Path(d) / "prog.cpp"
-        exe = Path(d) / "prog"
-        src.write_text(source, encoding="utf-8")
-        comp = subprocess.run(["g++", "-std=c++17", str(src), "-o", str(exe)],
-                              capture_output=True, text=True)
-        if comp.returncode != 0:
-            return {"outcome": 11, "stdout": "", "cmpinfo": comp.stderr, "stderr": ""}
-        try:
-            run = subprocess.run([str(exe)], input=stdin, capture_output=True,
-                                 text=True, timeout=10)
-        except subprocess.TimeoutExpired:
-            return {"outcome": 13, "stdout": "", "cmpinfo": "", "stderr": "timeout"}
-        outcome = OK if run.returncode == 0 else 12
-        return {"outcome": outcome, "stdout": run.stdout, "cmpinfo": "", "stderr": run.stderr}
-
-def norm(s):
-    # comparacao tolerante a espacos no fim das linhas e newline final
-    return "\n".join(line.rstrip() for line in (s or "").rstrip("\n").split("\n"))
-
-def main(argv=None):
-    ap = argparse.ArgumentParser(description="Testa codigo Arduino via Jobe (ou g++ local).")
-    ap.add_argument("--mock", required=True, help="caminho do Arduino.h (mock)")
-    ap.add_argument("--student", required=True, help="codigo do aluno (.cpp)")
-    ap.add_argument("--harness", required=True, help="harness/driver (.cpp)")
-    ap.add_argument("--tests", required=True, help="tests.json [{input, expected}]")
-    ap.add_argument("--jobe", help="URL do Jobe (ex.: http://localhost:4000)")
-    ap.add_argument("--apikey", help="X-API-KEY do Jobe, se exigido")
-    ap.add_argument("--local", action="store_true", help="executa com g++ local em vez do Jobe")
-    args = ap.parse_args(argv)
-
-    if not args.local and not args.jobe:
-        ap.error("informe --jobe URL ou use --local")
-
-    source = build_source(args.mock, args.student, args.harness)
-    casos = json.loads(Path(args.tests).read_text(encoding="utf-8"))
-
-    passou = 0
-    for i, caso in enumerate(casos, 1):
-        entrada = caso.get("input", "")
-        esperado = caso.get("expected", "")
-        res = run_local(source, entrada) if args.local else run_jobe(args.jobe, source, entrada, args.apikey)
-
-        if res["outcome"] == 11:
-            print(f"[{i}] ERRO DE COMPILACAO\n{res['cmpinfo'].strip()}")
-            continue
-        if res["outcome"] != OK:
-            print(f"[{i}] FALHOU (outcome={res['outcome']}) stderr={res['stderr'].strip()}")
-            continue
-        if norm(res["stdout"]) == norm(esperado):
-            passou += 1
-            print(f"[{i}] OK")
-        else:
-            print(f"[{i}] SAIDA DIFERENTE\n  esperado: {esperado!r}\n  obtido:   {res['stdout']!r}")
-
-    total = len(casos)
-    print(f"\n{passou}/{total} casos passaram.")
-    return 0 if passou == total else 1
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
-```
-
-### Exemplo de resposta do aluno `sol.cpp`
-
-```cpp
-#include <Arduino.h>
-bool ehPar(uint8_t n) {
-  return (n & 1) == 0;
-}
-```
-
-### casos: `tests.json  [{input, expected}] `
-
-```json
-[
-  { "input": "4\n", "expected": "1\n" },
-  { "input": "7\n", "expected": "0\n" },
-  { "input": "0\n", "expected": "1\n" }
-]
-```
