@@ -2,9 +2,11 @@ import React from 'react';
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 import ThemeCodeBlock from '@theme/CodeBlock';
-// import Admonition from '@theme/Admonition';
+import Admonition from '@theme/Admonition';
 import Details from '@theme/Details';
 import Link from '@docusaurus/Link';
+
+
 
 // import {VerifyDev1,VerifyDev1} from '@site/src/components/InstructionsSite';
 /*
@@ -18,6 +20,55 @@ import Link from '@docusaurus/Link';
 <Link to="/docs/vs-code">Visual Studio Code</Link>
 <Link to="/docs/stm32cubetools">STM32Cube Tools</Link>
 */
+
+
+// ---------------------------------------------------------------------------
+// <LabSetup /> — bloco "Antes de começar" (topo do lab)
+// ---------------------------------------------------------------------------
+export function LabSetup({ intro = '/lab/intro' } = {}) {
+    return (
+        <Admonition type="info" title="Antes de começar">
+            <p>
+                Confira o ambiente (faça a <b>configuração uma vez por máquina</b>; a
+                verificação, a cada aula):
+            </p>
+            <ol>
+                <li>
+                    <Link to={`${intro}#setup`}>Instalar as ferramentas</Link> — git,
+                    GitHub CLI e VS Code
+                </li>
+                <li>
+                    <Link to={`${intro}#git-config`}>Configurar o git</Link> — nome,
+                    e-mail e editor padrão <i>(uma vez)</i>
+                </li>
+                <li>
+                    <Link to={`${intro}#verify`}>Verificar git, gh e VS Code</Link> —
+                    deve mostrar as versões e <code>Logged in to github.com</code>
+                </li>
+            </ol>
+            <p>Verificação rápida (um comando confirma os três):</p>
+            <ThemeCodeBlock language="bash">
+                git --version &amp;&amp; gh auth status &amp;&amp; code -v
+            </ThemeCodeBlock>
+        </Admonition>
+    );
+}
+
+// ---------------------------------------------------------------------------
+// <LabLogout /> — bloco "Ao terminar" (fim do lab; máquina compartilhada)
+// ---------------------------------------------------------------------------
+export function LabLogout({ intro = '/lab/intro' } = {}) {
+    return (
+        <Admonition type="warning" title="Ao terminar — máquina de laboratório">
+            <p>
+                Antes de sair, faça <Link to={`${intro}#logout`}>logout</Link> para não
+                deixar sua conta do GitHub ativa na máquina (limpa a credencial salva do
+                git e encerra a sessão do <code>gh</code>).
+            </p>
+        </Admonition>
+    );
+}
+
 
 // import {VerifyDev1} from '@site/src/components/InstructionsSite';
 // <!-- Verifique o seu ambiente dev, git, gh e code -->
@@ -48,49 +99,6 @@ export function VerifyDev1() {
                 </ThemeCodeBlock>
                 <ThemeCodeBlock className="language-bash">
                     code --list-extensions --profile "ESP32IO"
-                </ThemeCodeBlock>
-            </Details>
-        </div >
-    );
-}
-
-// import {VerifyDev2} from '@site/src/components/InstructionsSite';
-// <!-- Verifique o seu ambiente dev, git, gh, code, gcc e gdb -->
-// <VerifyDev2 />
-export function VerifyDev2() {
-    return (
-        <div>
-            <Details summary={<summary>Verifique o seu ambiente de desenvolvimento!</summary>}>
-                <p>Versão do <Link to="/docs/git">git</Link> e configurações:</p>
-                <ThemeCodeBlock className="language-bash">
-                    git --version
-                </ThemeCodeBlock>
-                <ThemeCodeBlock className="language-bash">
-                    git config --list --show-origin
-                </ThemeCodeBlock>
-
-                <p>Versão do <Link to="/docs/github-cli">GitHub CLI</Link> e status de login:</p>
-                <ThemeCodeBlock className="language-bash">
-                    gh --version
-                </ThemeCodeBlock>
-                <ThemeCodeBlock className="language-bash">
-                    gh auth status
-                </ThemeCodeBlock>
-
-                <p>Versão do <Link to="/docs/vs-code-intro">Visual Studio Code</Link> e extensões instaladas:</p>
-                <ThemeCodeBlock className="language-bash">
-                    code -v
-                </ThemeCodeBlock>
-                <ThemeCodeBlock className="language-bash">
-                    code --list-extensions --profile "STM32"
-                </ThemeCodeBlock>
-
-                <p>Versão do gcc e gdb instaladas:</p>
-                <ThemeCodeBlock className="language-bash">
-                    gcc --version
-                </ThemeCodeBlock>
-                <ThemeCodeBlock className="language-bash">
-                    gbd --version
                 </ThemeCodeBlock>
             </Details>
         </div >
