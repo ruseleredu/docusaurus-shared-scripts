@@ -76,31 +76,29 @@ export function LabLogout({ intro = '/lab/intro' } = {}) {
 export function VerifyDev1() {
     return (
         <div>
-            <Details summary={<summary>Verifique o seu ambiente de desenvolvimento!</summary>}>
-                <p>Versão do <Link to="/docs/git">git</Link> e configurações:</p>
-                <ThemeCodeBlock className="language-bash">
-                    git --version
-                </ThemeCodeBlock>
-                <ThemeCodeBlock className="language-bash">
-                    git config --list --show-origin
-                </ThemeCodeBlock>
+            <p>Versão do <Link to="/docs/git">git</Link> e configurações:</p>
+            <ThemeCodeBlock className="language-bash">
+                git --version
+            </ThemeCodeBlock>
+            <ThemeCodeBlock className="language-bash">
+                git config --list --show-origin
+            </ThemeCodeBlock>
 
-                <p>Versão do <Link to="/docs/github-cli">GitHub CLI</Link> e status de login:</p>
-                <ThemeCodeBlock className="language-bash">
-                    gh --version
-                </ThemeCodeBlock>
-                <ThemeCodeBlock className="language-bash">
-                    gh auth status
-                </ThemeCodeBlock>
+            <p>Versão do <Link to="/docs/github-cli">GitHub CLI</Link> e status de login:</p>
+            <ThemeCodeBlock className="language-bash">
+                gh --version
+            </ThemeCodeBlock>
+            <ThemeCodeBlock className="language-bash">
+                gh auth status
+            </ThemeCodeBlock>
 
-                <p>Versão do <Link to="/docs/vs-code-intro">Visual Studio Code</Link> e extensões instaladas:</p>
-                <ThemeCodeBlock className="language-bash">
-                    code -v
-                </ThemeCodeBlock>
-                <ThemeCodeBlock className="language-bash">
-                    code --list-extensions --profile "ESP32IO"
-                </ThemeCodeBlock>
-            </Details>
+            <p>Versão do <Link to="/docs/vs-code-intro">Visual Studio Code</Link> e extensões instaladas:</p>
+            <ThemeCodeBlock className="language-bash">
+                code -v
+            </ThemeCodeBlock>
+            <ThemeCodeBlock className="language-bash">
+                code --list-extensions --profile "ESP32IO"
+            </ThemeCodeBlock>
         </div >
     );
 }
@@ -111,42 +109,41 @@ export function VerifyDev1() {
 export function GitConfig() {
     return (
         <div>
-            <Details summary={<summary>Configure a ferramenta git</summary>}>
-                <p>Configure o nome de usuário para todos os repositórios locais ligados às suas transações de commit:</p>
-                <ThemeCodeBlock className="language-bash">
-                    git config --global user.name "Your Name"
-                </ThemeCodeBlock>
+            <p>Configure o nome de usuário para todos os repositórios locais ligados às suas transações de commit:</p>
+            <ThemeCodeBlock className="language-bash">
+                git config --global user.name "Your Name"
+            </ThemeCodeBlock>
 
-                <p> Configure o email de usuário para todos os repositórios locais ligados às suas transações de commit:</p>
-                <ThemeCodeBlock className="language-bash">
-                    git config --global user.email "you@example.com"
-                </ThemeCodeBlock>
+            <p> Configure o email de usuário para todos os repositórios locais ligados às suas transações de commit:</p>
+            <ThemeCodeBlock className="language-bash">
+                git config --global user.email "you@example.com"
+            </ThemeCodeBlock>
 
-                <p>É recomendado verificar se a instalação do seu Git não está realizando nenhuma transformação entre LFs e CRLFs.</p>
-                <ThemeCodeBlock className="language-bash">
-                    git config --global core.autocrlf false
-                </ThemeCodeBlock>
+            <p>É recomendado verificar se a instalação do seu Git não está realizando nenhuma transformação entre LFs e CRLFs.</p>
+            <ThemeCodeBlock className="language-bash">
+                git config --global core.autocrlf false
+            </ThemeCodeBlock>
 
-                <p>Configure o <Link to="/docs/git">git</Link> para usar o <Link to="/docs/vs-code-intro">Visual Studio Code</Link> como editor padrão para tarefas como escrever mensagens de commit ou rebases interativos</p>
-                <ThemeCodeBlock className="language-bash">
-                    git config --global core.editor "code --wait"
-                </ThemeCodeBlock>
+            <p>Configure o <Link to="/docs/git">git</Link> para usar o <Link to="/docs/vs-code-intro">Visual Studio Code</Link> como editor padrão para tarefas como escrever mensagens de commit ou rebases interativos</p>
+            <ThemeCodeBlock className="language-bash">
+                git config --global core.editor "code --wait"
+            </ThemeCodeBlock>
 
-                <p>Habilite a coloração automática da saída da linha de comando do <Link to="/docs/git">Git</Link>:</p>
-                <ThemeCodeBlock className="language-bash">
-                    git config --global color.ui auto
-                </ThemeCodeBlock>
+            <p>Habilite a coloração automática da saída da linha de comando do <Link to="/docs/git">Git</Link>:</p>
+            <ThemeCodeBlock className="language-bash">
+                git config --global color.ui auto
+            </ThemeCodeBlock>
 
-                <p>Configura o <Link to="/docs/git">Git</Link> para usar main como o nome do branch padrão sempre que você inicializar um novo repositório localmente:</p>
-                <ThemeCodeBlock className="language-bash">
-                    git config --global init.defaultBranch main
-                </ThemeCodeBlock>
+            <p>Configura o <Link to="/docs/git">Git</Link> para usar main como o nome do branch padrão sempre que você inicializar um novo repositório localmente:</p>
+            <ThemeCodeBlock className="language-bash">
+                git config --global init.defaultBranch main
+            </ThemeCodeBlock>
 
-                <p>Liste as configurações aplicadas:</p>
-                <ThemeCodeBlock className="language-bash">
-                    git config --list --show-origin
-                </ThemeCodeBlock>
-            </Details>
+            <p>Liste as configurações aplicadas:</p>
+            <ThemeCodeBlock className="language-bash">
+                git config --list --show-origin
+            </ThemeCodeBlock>
+
         </div >
     );
 }
@@ -219,20 +216,26 @@ export function DevTools() {
                 <p><b><Link to="/docs/platformio-intro">PlatformIO IDE para VSCode</Link>: Sua porta de entrada para a excelência no desenvolvimento de software embarcado.</b></p>
                 <ul>
                     <li><a href="https://marketplace.visualstudio.com/items?itemName=platformio.platformio-ide" target="_blank">PlatformIO IDE para VSCode</a> Desbloqueie o verdadeiro potencial do desenvolvimento de software embarcado com o ecossistema colaborativo do PlatformIO, adotando princípios declarativos, metodologias orientadas a testes e toolchains modernas para um sucesso incomparável.
+
+                        <ThemeCodeBlock className="language-bash">
+                            code --install-extension platformio.platformio-ide --profile "ESP32IO"
+                        </ThemeCodeBlock>
+                    </li>
+                    <li>
+                        <p>Instale a plataforma espressif32:</p>
+                        <ThemeCodeBlock className="language-bash">
+                            {`pio platform install espressif32`}
+                        </ThemeCodeBlock>
+                        <p>Você precisa editar a variável de ambiente do sistema chamada <b>Path</b> e adicionar o caminho <b>%USERPROFILE%\.platformio\penv\Scripts\</b> no início da lista.</p>
+
+                    </li>
+                    <li>
+                        <p>Inicie o projeto no PlatformIO:</p>
+                        <ThemeCodeBlock className="language-bash">
+                            {`pio project init -b esp32dev -O "framework=arduino" -O "monitor_speed=115200" --sample-code`}
+                        </ThemeCodeBlock>
                     </li>
                 </ul>
-                <ThemeCodeBlock className="language-bash">
-                    code --install-extension platformio.platformio-ide --profile "ESP32IO"
-                </ThemeCodeBlock>
-                <p><ul><li>Instale a plataforma espressif32:</li></ul></p>
-                <ThemeCodeBlock className="language-bash">
-                    {`pio platform install espressif32`}
-                </ThemeCodeBlock>
-                <p>Você precisa editar a variável de ambiente do sistema chamada <b>Path</b> e adicionar o caminho <b>%USERPROFILE%\.platformio\penv\Scripts\</b> no início da lista.</p>
-                <p><ul><li>Inicie o projeto no PlatformIO:</li></ul></p>
-                <ThemeCodeBlock className="language-bash">
-                    {`pio project init -b esp32dev -O "framework=arduino" -O "monitor_speed=115200" --sample-code`}
-                </ThemeCodeBlock>
             </TabItem>
             <TabItem value="esp32-drivers" label="Drivers">
                 <ol>
@@ -350,20 +353,26 @@ export function DevTools2() {
                 <p><b><Link to="/docs/platformio-intro">PlatformIO IDE para VSCode</Link>: Sua porta de entrada para a excelência no desenvolvimento de software embarcado.</b></p>
                 <ul>
                     <li><a href="https://marketplace.visualstudio.com/items?itemName=platformio.platformio-ide" target="_blank">PlatformIO IDE para VSCode</a> Desbloqueie o verdadeiro potencial do desenvolvimento de software embarcado com o ecossistema colaborativo do PlatformIO, adotando princípios declarativos, metodologias orientadas a testes e toolchains modernas para um sucesso incomparável.
+
+                        <ThemeCodeBlock className="language-bash">
+                            code --install-extension platformio.platformio-ide --profile "ESP32IO"
+                        </ThemeCodeBlock>
+                    </li>
+                    <li>
+                        <p>Instale a plataforma espressif32:</p>
+                        <ThemeCodeBlock className="language-bash">
+                            {`pio platform install espressif32`}
+                        </ThemeCodeBlock>
+                        <p>Você precisa editar a variável de ambiente do sistema chamada <b>Path</b> e adicionar o caminho <b>%USERPROFILE%\.platformio\penv\Scripts\</b> no início da lista.</p>
+
+                    </li>
+                    <li>
+                        <p>Inicie o projeto no PlatformIO:</p>
+                        <ThemeCodeBlock className="language-bash">
+                            {`pio project init -b esp32dev -O "framework=arduino" -O "monitor_speed=115200" --sample-code`}
+                        </ThemeCodeBlock>
                     </li>
                 </ul>
-                <ThemeCodeBlock className="language-bash">
-                    code --install-extension platformio.platformio-ide --profile "ESP32IO"
-                </ThemeCodeBlock>
-                <p><ul><li>Instale a plataforma espressif32:</li></ul></p>
-                <ThemeCodeBlock className="language-bash">
-                    {`pio platform install espressif32`}
-                </ThemeCodeBlock>
-                <p>Você precisa editar a variável de ambiente do sistema chamada <b>Path</b> e adicionar o caminho <b>%USERPROFILE%\.platformio\penv\Scripts\</b> no início da lista.</p>
-                <p><ul><li>Inicie o projeto no PlatformIO:</li></ul></p>
-                <ThemeCodeBlock className="language-bash">
-                    {`pio project init -b esp32dev -O "framework=arduino" -O "monitor_speed=115200" --sample-code`}
-                </ThemeCodeBlock>
             </TabItem>
             <TabItem value="esp32-drivers" label="Drivers">
                 <ol>
@@ -409,27 +418,26 @@ export function DevTools2() {
 export function GitLogOut() {
     return (
         <div>
-            <Details summary={<summary>Faça Logout do seu ambiente de desenvolvimento!</summary>}>
-                <div>Para o <Link to="/docs/git">git</Link> "esquecer" suas informações salvas:</div>
-                <ThemeCodeBlock className="language-bash">
-                    git credential-manager erase
-                </ThemeCodeBlock>
 
-                <div>Ou liste suas credenciais:</div>
-                <ThemeCodeBlock className="language-bash">
-                    cmdkey /list | findstr "github"
-                </ThemeCodeBlock>
+            <div>Para o <Link to="/docs/git">git</Link> "esquecer" suas informações salvas:</div>
+            <ThemeCodeBlock className="language-bash">
+                git credential-manager erase
+            </ThemeCodeBlock>
 
-                <div>Exclua a credencial:</div>
-                <ThemeCodeBlock className="language-bash">
-                    cmdkey /delete:git:https://github.com
-                </ThemeCodeBlock>
+            <div>Ou liste suas credenciais:</div>
+            <ThemeCodeBlock className="language-bash">
+                cmdkey /list | findstr "github"
+            </ThemeCodeBlock>
 
-                <div>Logout do <Link to="/docs/github-cli">GitHub CLI</Link>:</div>
-                <ThemeCodeBlock className="language-bash">
-                    gh auth logout
-                </ThemeCodeBlock>
-            </Details>
+            <div>Exclua a credencial:</div>
+            <ThemeCodeBlock className="language-bash">
+                cmdkey /delete:git:https://github.com
+            </ThemeCodeBlock>
+
+            <div>Logout do <Link to="/docs/github-cli">GitHub CLI</Link>:</div>
+            <ThemeCodeBlock className="language-bash">
+                gh auth logout
+            </ThemeCodeBlock>
         </div>
     );
 }
