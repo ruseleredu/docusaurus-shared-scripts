@@ -32,13 +32,13 @@ sidebar_position: 8
 
 ---
 
-:::info[Ambiente de Desenvolvimento]
+import { LabSetup, LabLogout } from "@site/src/components/InstructionsSite";
 
-- [Configuração do ambiente de desenvolvimento](/lab/intro#configuração-do-ambiente-de-desenvolvimento)
-- [Configure o git](/lab/intro#configure-o-git)
-- [Status do git, gh e code](/lab/intro#status-do-git-gh-e-code)
-- [Logout](/lab/intro#logout)
-  :::
+<LabSetup />
+
+---
+
+<LabLogout />
 
 ---
 
@@ -48,19 +48,11 @@ Escolha o Grupo e entre com o comando abaixo para criar o repositório no GitHub
 
 <LabTeamMembers labName="lab05" />
 
-import LabSubmit from "@site/src/components/LabSubmit";
-
 ## Envie o link do repositório do seu grupo no Moodle:
 
 <LabSubmit labName="lab05" />
 
 ---
-
-## Logout do seu ambiente dev, git e gh
-
-import { GitLogOut } from "@site/src/components/InstructionsSite";
-
-<GitLogOut />
 
 ## Pilha de Protocolos IoT: Enlace e Rede
 
