@@ -1,106 +1,53 @@
-# Website
+# docusaurus-shared-scripts
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+docusaurus-shared-scripts
 
-## Installation
-
+## Add Remote
 
 ```bash
-npx create-docusaurus@latest stm32doc classic --typescript
+git remote add shared-scripts https://github.com/ruseleredu/docusaurus-shared-scripts.git
 ```
 
-[Diagrams](https://docusaurus.io/docs/markdown-features/diagrams)
+## Add Subtrees
 
 ```bash
-npm install --save @docusaurus/theme-mermaid
+git subtree add --prefix=scripts shared-scripts main --squash
 ```
 
-[Math Equations](https://docusaurus.io/docs/markdown-features/math-equations)
+## List existing remotes
 
 ```bash
-npm install --save remark-math@6 rehype-katex@7
+git remote -v
 ```
 
-[Emoji](https://www.npmjs.com/package/remark-emoji)
-
-- https://emojidb.org/remark-emojis
+## Pull Updates
 
 ```bash
-npm install remark-emoji
+git subtree pull --prefix=scripts shared-scripts main --squash
 ```
 
-## Clone repo
+## Push Changes
 
 ```bash
-git clone https://github.com/ruseleredu/stm32doc.git
-cd stm32doc
-npm i
+git subtree push --prefix=scripts shared-scripts main
 ```
 
-## Local Development
+## List existing remotes
 
 ```bash
-npm run start
+git remote remove shared-scripts
 ```
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
-
-## Build
+## Add another remote
 
 ```bash
-npm run build
+git remote add shared-components https://github.com/ruseleredu/docusaurus-shared-components.git
 ```
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
+---
+
+# Scripts
 
 ```bash
-npm run serve
-```
-
-## Deployment
-
-```bash
-set GIT_USER=ruseleredu
-npm run deploy
-```
-
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
-
-## Clean Cache
-
-```bash
-npm run clear
-```
-
-## 🛠️ Upgrade Docusaurus
-
-To upgrade Docusaurus packages with the latest version, run the following command:
-
-```bash
-npm i @docusaurus/core@latest @docusaurus/preset-classic@latest @docusaurus/theme-mermaid@latest @docusaurus/module-type-aliases@latest @docusaurus/tsconfig@latest @docusaurus/types@latest
-```
-
-To ensure accurate Baseline data, please update:
-```bash
-npm i baseline-browser-mapping@latest -D
-```
-
-```bash
-npm audit fix
-```
-
-## Upgrade groups status
-
-```bash
-node scripts/check-groups.js 2026-1
-```
-
-### Cria template do lab e repos por grupo:
-
-```bash
-./scripts/create-lab-template.sh
-```
-
-```bash
-./scripts/create-lab-from-template.sh
+node scripts/generate-emojis.js
 ```

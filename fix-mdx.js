@@ -1,8 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-// Directories to scan (Docusaurus defaults)
-const dirs = ['./docs', './blog', './labs', './quiz', './projects', './tpls'];
+const dirs = ['./docs', './blog', './ead-docs', './lab-docs', './pjts-docs', './utfpr'];
 
 const fixMdxComments = (dir) => {
     if (!fs.existsSync(dir)) return;
@@ -20,7 +19,6 @@ const fixMdxComments = (dir) => {
 
             // Regex to find and replace with {/* comment */}
             // It handles multi-line comments as well
-            //const newContent = content.replace(//g, '{/*$1*/}');
             const newContent = content.replace(/<!--([\s\S]*?)-->/g, '{/*$1*/}');
 
             if (content !== newContent) {
