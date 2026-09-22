@@ -40,7 +40,10 @@ sidebar_position: 3
 - [ ] Confirmar que o projeto está disponível no GitHub
 - [ ] Logout
 
-import { LabSetup, LabLogout } from "@site/src/components/InstructionsSite";
+import {
+  LabSetup,
+  LabLogout,
+} from "@site/src/components/shared/InstructionsSite";
 
 <LabSetup />
 
@@ -49,6 +52,25 @@ import { LabSetup, LabLogout } from "@site/src/components/InstructionsSite";
 <LabLogout />
 
 ---
+
+### Logout {/* #logout */}
+
+import {
+  DevTools,
+  GitConfig,
+  VerifyDev1,
+  GitLogOut,
+} from "@site/src/components/shared/InstructionsSite";
+
+<DevTools />
+
+### Configure o git {/* #git-config */}
+
+<GitConfig />
+
+### Status do git, gh e code: {/* #verify */}
+
+<VerifyDev1 />
 
 # Parte 01 — Introdução ao Git, GitHub e entrega com CI
 
