@@ -8,7 +8,7 @@ import LabTeamMembers from "@site/src/components/LabTeamMembers";
 import LabSubmit from "@site/src/components/LabSubmit";
 import LabFromTemplate from "@site/src/components/LabFromTemplate";
 import CommitPoint from "@site/src/components/CommitPoint";
-import FileTree from "@site/src/components/FileTree";
+import FileTree from "@site/src/components/shared/FileTree";
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
