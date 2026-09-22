@@ -1,0 +1,225 @@
+---
+id: file-trees-guide
+title: Guia de Componentes de Árvore de Arquivos
+sidebar_label: Árvores de Arquivos
+---
+
+import SimpleFileTree from "@site/src/components/SimpleFileTree";
+import FileTree from "@site/src/components/FileTree";
+
+# Guia de Componentes de Árvore de Arquivos
+
+Disponibilizamos dois componentes React no projeto para documentar estruturas de arquivos, pastas e repositórios: **`SimpleFileTree`** e **`FileTree`**.
+
+---
+
+## 1. `SimpleFileTree`
+
+O `SimpleFileTree` gera uma saída em texto plano (ASCII tree) formatada como bloco de código (`<ThemeCodeBlock language="txt">`). É ideal para representar árvores clássicas de terminal ou estruturas dinâmicas do repositório/laboratório com suporte opcional ao contêiner colapsável `<details>`.
+
+### Props principais
+
+- **`profile`** _(string, opcional)_: Perfil pré-configurado para repositórios do curso (ex: `"lab00"`, `"lab01"`).
+- **`root`** _(string, opcional)_: Nome da raiz da árvore.
+- **`title`** _(string, opcional)_: Título exibido no topo ou na tag `<summary>` do `<details>`.
+- **`files`** _(string[], opcional)_: Lista de caminhos relativos.
+- **`details`** _(boolean, opcional)_: Envolve a árvore numa tag `<details>` se `true`.
+- **`defaultOpen`** _(boolean, opcional)_: Define se o `<details>` inicia aberto (padrão `true`).
+
+### Exemplo de uso com `profile`:
+
+```tsx
+<SimpleFileTree defaultOpen details profile="lab00" />
+```
+
+<SimpleFileTree defaultOpen details profile="lab00" />
+
+---
+
+### Exemplo de uso customizado:
+
+```tsx
+<SimpleFileTree
+  details
+  defaultOpen
+  title="Estrutura do Projeto C++"
+  root="meu-projeto"
+  files={[
+    ".github/workflows/grade.yml d",
+    ".vscode/launch.json",
+    "src/main.cpp u",
+    "src/utils.h c",
+    "notes.txt r",
+  ]}
+/>
+```
+
+<SimpleFileTree
+  details
+  defaultOpen
+  title="Estrutura do Projeto C++"
+  root="meu-projeto"
+  files={[
+    ".github/workflows/grade.yml d",
+    ".vscode/launch.json",
+    "src/main.cpp u",
+    "src/utils.h c",
+    "notes.txt r",
+  ]}
+/>
+
+---
+
+## 2. `FileTree`
+
+O `FileTree` renderiza uma árvore interativa estilizada em HTML/CSS. Possui suporte a ícones por tipo de arquivo, marcações visuais com badget/cores para ações CRUD e **recurso de copiar caminho relativo para a área de transferência com 1 clique**.
+
+### Props principais
+
+- **`root`** _(string, opcional)_: Nome da pasta/repositório raiz.
+- **`files`** _(string[], obrigatório)_: Lista de arquivos/pastas com ação CRUD opcional.
+
+### Exemplo de uso:
+
+```tsx
+<FileTree
+  root="lab03-grupo-p"
+  files={[
+    ".github/workflows/grade.yml d",
+    ".vscode/launch.json",
+    "src/main.cpp u",
+    "wokwi.toml r",
+    "notes.txt c",
+  ]}
+/>
+```
+
+<FileTree
+  root="lab03-grupo-p"
+  files={[
+    ".github/workflows/grade.yml d",
+    ".vscode/launch.json",
+    "src/main.cpp u",
+    "wokwi.toml r",
+    "notes.txt c",
+  ]}
+/>
+
+---
+
+## 3. Comparação Lado a Lado
+
+Abaixo você confere o mesmo conjunto de dados renderizado por ambos os componentes simultaneamente:
+
+---
+
+## 4. Tabela Comparativa de Recursos
+
+| Recurso                        | `SimpleFileTree`                                                   | `FileTree`                                                |
+| ------------------------------ | ------------------------------------------------------------------ | --------------------------------------------------------- |
+| **Formato de Saída**           | Bloco de texto Monospaced (ASCII)                                  | Componentes e listas HTML estilisadas                     |
+| **Ações CRUD**                 | Comentários simples de texto (`# Editar`, `# Deletar`)             | Badges coloridas e interativas (`👈 Edite Aqui`)          |
+| **Interatividade**             | Copiar o bloco completo (via Docusaurus CodeBlock)                 | Clique para copiar o caminho do arquivo individual        |
+| **Ícones de Arquivo**          | Não (somente texto ASCII)                                          | Sim (`📁`, `📝`, `🚀`, `🔧`, `📄`)                        |
+| **Perfis Prontos (`profile`)** | Sim (`lab00`, `lab01`, etc.)                                       | Não (exige informar a prop `files`)                       |
+| **Suporte a `<details>**`      | Nativo (`details={true}`)                                          | Não (renderiza diretamente o card)                        |
+| **Casos de Uso Recomendados**  | Copiar/colar rápido em logs, READMEs e organizações de turmas/labs | Instruções passo a passo de exercícios e tarefas do aluno |
+
+---
+
+## 5. Mapeamento de Atalhos CRUD
+
+Ambos os componentes aceitam as letras de atalho no final da linha (exemplo: `"src/main.cpp u"`):
+
+| Atalho  | Ação / Significado   | Renderização no `SimpleFileTree` | Renderização no `FileTree`         |
+| ------- | -------------------- | -------------------------------- | ---------------------------------- |
+| **`c`** | **Create** / Criar   | `# Criar`                        | Badge Azul (`👈 Criar Aqui`)       |
+| **`r`** | **Read** / Ler       | `# Ler`                          | Badge Azul Escuro (`👈 Verificar`) |
+| **`u`** | **Update** / Editar  | `# Editar`                       | Badge Amarela (`👈 Edite Aqui`)    |
+| **`d`** | **Delete** / Remover | `# Deletar`                      | Badge Vermelha (`👈 Remover`)      |
+| **`p`** | **Professor**        | `# (Professor)`                  | N/A                                |
+| **`n`** | **Notas**            | `# (Notas)`                      | N/A                                |
+
+---
+
+```tsx
+<FileTree
+  root="labxy-grupo-x"
+  files={[
+    ".github/workflows/grade.yml u",
+    ".gitignore",
+    ".vscode/c_cpp_properties.json",
+    ".vscode/extensions.json",
+    ".vscode/launch.json r",
+    "README.md",
+    "diagram.json c",
+    "include/README",
+    "lib/README d",
+    "platformio.ini",
+    "src/main.cpp",
+    "test/README",
+    "wokwi.toml c",
+  ]}
+/>
+```
+
+<FileTree
+  root="labxy-grupo-x"
+  files={[
+    ".github/workflows/grade.yml u",
+    ".gitignore",
+    ".vscode/c_cpp_properties.json",
+    ".vscode/extensions.json",
+    ".vscode/launch.json r",
+    "README.md",
+    "diagram.json c",
+    "include/README",
+    "lib/README d",
+    "platformio.ini",
+    "src/main.cpp",
+    "test/README",
+    "wokwi.toml c",
+  ]}
+/>
+
+---
+
+```tsx
+<FileTree
+  root="labxy-grupo-x"
+  files={[
+    ".github/workflows/grade.yml d", // Delete (Remover)
+    "src/main.cpp r", // Read (Verificar)
+    "wokwi.toml u", // Update (Edite Aqui)
+    "diagram.json c", // Create (Criar Aqui)
+  ]}
+/>
+```
+
+<FileTree
+  root="labxy-grupo-x"
+  files={[
+    ".github/workflows/grade.yml d", // Delete (Remover)
+    "src/main.cpp r", // Read (Verificar)
+    "wokwi.toml u", // Update (Edite Aqui)
+    "diagram.json c", // Create (Criar Aqui)
+  ]}
+/>
+
+---
+
+```tsx
+<SimpleFileTree
+  details
+  profile="lab00"
+  title="Estrutura do Laboratório Inicial"
+  root="UTFPR-ELT85B-2026-2"
+/>
+```
+
+<SimpleFileTree
+  details
+  profile="lab00"
+  title="Estrutura do Laboratório Inicial"
+  root="UTFPR-ELT85B-2026-2"
+/>
