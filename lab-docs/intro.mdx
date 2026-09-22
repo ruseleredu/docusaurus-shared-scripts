@@ -1,7 +1,7 @@
 ---
 title: Introdução
 description: Introdução as atividades de laboratório.
-sidebar_position: 1
+sidebar_position: 0
 ---
 
 ## Ambiente de desenvolvimento
@@ -17,17 +17,25 @@ import {
 
 <DevTools />
 
+---
+
 ### Configure o git {/* #git-config */}
 
 <GitConfig />
+
+---
 
 ### Status do git, gh e code: {/* #verify */}
 
 <VerifyDev1 />
 
+---
+
 ### Logout {/* #logout */}
 
 <GitLogOut />
+
+---
 
 ## Clone o repositório inicial do LABXY (Exemplo)
 
@@ -39,102 +47,9 @@ Escolha o Grupo e entre com o comando abaixo para criar o repositório no GitHub
 
 <LabSubmit labName="labxy" />
 
-<LabStructure lab="XY" />
-
 ## Estrutura do Laboratório XY
 
-`ActionType = 'create' | 'read' | 'update' | 'delete';`
-
-<FileTree
-  root="labxy-grupo-x"
-  files={[
-    ".github/workflows/grade.yml u",
-    ".gitignore",
-    ".vscode/c_cpp_properties.json",
-    ".vscode/extensions.json",
-    ".vscode/launch.json r",
-    "README.md",
-    "diagram.json c",
-    "include/README",
-    "lib/README d",
-    "platformio.ini",
-    "src/main.cpp",
-    "test/README",
-    "wokwi.toml c",
-  ]}
-/>
-
-<FileTree
-  root="labxy-grupo-x"
-  files={[
-    ".github/workflows/grade.yml d", // Delete (Remover)
-    "src/main.cpp r", // Read (Verificar)
-    "wokwi.toml u", // Update (Edite Aqui)
-    "diagram.json c", // Create (Criar Aqui)
-  ]}
-/>
-
-A basic wokwi.toml file looks like this:
-
-<FileTree
-  root="lab02-grupo-x (git repo)"
-  files={["wokwi.toml c", "src/main.cpp"]}
-/>
-
-```toml title="wokwi.toml"
-[wokwi]
-version = 1
-firmware = '.pio/build/esp32dev/firmware.bin'
-elf = '.pio/build/esp32dev/firmware.elf'
-```
-
-<FileTree
-  root="lab03-grupo-p-main"
-  files={[
-    ".github/workflows/grade.yml d",
-    "Empty/Folder/", // Pasta Vazia (termina com /)
-    "src/main.cpp r",
-    "...", // Reticências
-    "wokwi.toml u",
-  ]}
-/>
-
-<FileTree
-  root="lab03-grupo-p-main"
-  files={[
-    ".github/workflows/grade.yml",
-    ".gitignore",
-    ".vscode/c_cpp_properties.json",
-    ".vscode/extensions.json",
-    ".vscode/launch.json",
-    "README.md",
-    "diagram.json",
-    "include/README",
-    "lib/README",
-    "platformio.ini",
-    "src/main.cpp",
-    "test/README",
-    "wokwi.toml",
-  ]}
-/>
-
-- Árvore em modo expansível (details)
-
-<FileTree
-  details
-  root="lab03-grupo-p-main"
-  files={[".github/workflows/grade.yml d", "wokwi.toml u"]}
-/>
-
-- Árvore em modo expansível (details)
-
-<FileTree
-  details
-  defaultOpen
-  title="Clique para ver a árvore do projeto"
-  root="lab03-grupo-p-main"
-  files={["src/main.cpp r", "wokwi.toml u"]}
-/>
+<LabStructure lab="XY" />
 
 ## Como funciona a avaliação
 
