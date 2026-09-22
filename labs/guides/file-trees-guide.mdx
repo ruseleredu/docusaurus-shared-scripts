@@ -4,12 +4,23 @@ title: Guia de Componentes de Árvore de Arquivos
 sidebar_label: Árvores de Arquivos
 ---
 
-import SimpleFileTree from "@site/src/components/SimpleFileTree";
-import FileTree from "@site/src/components/FileTree";
-
 # Guia de Componentes de Árvore de Arquivos
 
 Disponibilizamos dois componentes React no projeto para documentar estruturas de arquivos, pastas e repositórios: **`SimpleFileTree`** e **`FileTree`**.
+
+## Mapeamento de Atalhos
+
+Ambos os componentes aceitam letras de atalho ao final de cada linha (exemplo: `"Times/Grupo-P p"` ou `"src/main.cpp u"`):
+
+| Atalho  | Significado     | SimpleFileTree  | FileTree                        |
+| :-----: | :-------------- | :-------------- | :------------------------------ |
+| **`c`** | Criar           | `# Criar`       | Badge Azul (`👈 Criar Aqui`)    |
+| **`r`** | Ler / Verificar | `# Ler`         | Badge Azul (`👈 Verificar`)     |
+| **`u`** | Editar          | `# Editar`      | Badge Amarela (`👈 Edite Aqui`) |
+| **`d`** | Remover         | `# Deletar`     | Badge Vermelha (`👈 Remover`)   |
+| **`p`** | Professor       | `# (Professor)` | Badge Neutra (`👈 Professor`)   |
+| **`n`** | Notas           | `# (Notas)`     | Badge Neutra (`👈 Notas`)       |
+| **`g`** | **Gerado**      | `# Gerado`      | Badge Cinza (`👈 Gerado`)       |
 
 ---
 
@@ -122,25 +133,61 @@ Abaixo você confere o mesmo conjunto de dados renderizado por ambos os componen
 | **Interatividade**             | Copiar o bloco completo (via Docusaurus CodeBlock)                 | Clique para copiar o caminho do arquivo individual        |
 | **Ícones de Arquivo**          | Não (somente texto ASCII)                                          | Sim (`📁`, `📝`, `🚀`, `🔧`, `📄`)                        |
 | **Perfis Prontos (`profile`)** | Sim (`lab00`, `lab01`, etc.)                                       | Não (exige informar a prop `files`)                       |
-| **Suporte a `<details>**`      | Nativo (`details={true}`)                                          | Não (renderiza diretamente o card)                        |
+| **Suporte a `<details>`**      | Nativo (`details={true}`)                                          | Não (renderiza diretamente o card)                        |
 | **Casos de Uso Recomendados**  | Copiar/colar rápido em logs, READMEs e organizações de turmas/labs | Instruções passo a passo de exercícios e tarefas do aluno |
 
 ---
 
-## 5. Mapeamento de Atalhos CRUD
+### Exemplo de Uso no MDX
 
-Ambos os componentes aceitam as letras de atalho no final da linha (exemplo: `"src/main.cpp u"`):
+```mdx
+<FileTree
+  root="lab03-grupo-p-main"
+  files={[
+    "build/main.o g",
+    "docs/empty-folder/",
+    "src/main.cpp u",
+    "wokwi.toml r",
+  ]}
+/>
+```
 
-| Atalho  | Ação / Significado   | Renderização no `SimpleFileTree` | Renderização no `FileTree`         |
-| ------- | -------------------- | -------------------------------- | ---------------------------------- |
-| **`c`** | **Create** / Criar   | `# Criar`                        | Badge Azul (`👈 Criar Aqui`)       |
-| **`r`** | **Read** / Ler       | `# Ler`                          | Badge Azul Escuro (`👈 Verificar`) |
-| **`u`** | **Update** / Editar  | `# Editar`                       | Badge Amarela (`👈 Edite Aqui`)    |
-| **`d`** | **Delete** / Remover | `# Deletar`                      | Badge Vermelha (`👈 Remover`)      |
-| **`p`** | **Professor**        | `# (Professor)`                  | N/A                                |
-| **`n`** | **Notas**            | `# (Notas)`                      | N/A                                |
+<FileTree
+  root="lab03-grupo-p-main"
+  files={[
+    "build/main.o g",
+    "docs/empty-folder/",
+    "src/main.cpp u",
+    "wokwi.toml r",
+  ]}
+/>
+
+<SimpleFileTree
+  root="lab03-grupo-p-main"
+  files={[
+    "build/main.o g",
+    "docs/empty-folder/",
+    "src/main.cpp u",
+    "wokwi.toml r",
+  ]}
+/>
 
 ---
+
+<FileTree
+  root="ELT85B-N21-2026-2"
+  files={[
+    "Times/Grupo-A",
+    "Times/...",
+    "Times/Grupo-P p",
+    "Times/Grupo-N n",
+    "Repositórios/lab00-template",
+    "Repositórios/lab00-grupo-a",
+    "Repositórios/...",
+    "Repositórios/lab00-grupo-p p",
+    "Repositórios/lab00-grupo-n n",
+  ]}
+/>
 
 ```tsx
 <FileTree
@@ -151,9 +198,10 @@ Ambos os componentes aceitam as letras de atalho no final da linha (exemplo: `"s
     ".vscode/c_cpp_properties.json",
     ".vscode/extensions.json",
     ".vscode/launch.json r",
-    "README.md",
+    "build/main.o g",
+    "README.md p",
     "diagram.json c",
-    "include/README",
+    "include/README n",
     "lib/README d",
     "platformio.ini",
     "src/main.cpp",
@@ -171,9 +219,10 @@ Ambos os componentes aceitam as letras de atalho no final da linha (exemplo: `"s
     ".vscode/c_cpp_properties.json",
     ".vscode/extensions.json",
     ".vscode/launch.json r",
-    "README.md",
+    "build/main.o g",
+    "README.md p",
     "diagram.json c",
-    "include/README",
+    "include/README n",
     "lib/README d",
     "platformio.ini",
     "src/main.cpp",

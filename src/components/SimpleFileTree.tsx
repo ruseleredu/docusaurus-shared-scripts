@@ -24,6 +24,7 @@ const CRUD_MAP: Record<string, string> = {
     d: '# Deletar',
     p: '# (Professor)',
     n: '# (Notas)',
+    g: '# Gerado',
 };
 
 interface TreeNode {

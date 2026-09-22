@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export type ActionType = 'create' | 'read' | 'update' | 'delete';
+export type ActionType = 'create' | 'read' | 'update' | 'delete' | 'professor' | 'notas' | 'generated';
 
 export interface FileTreeProps {
     /** Nome da pasta raiz principal */
@@ -30,29 +30,18 @@ interface ActionConfig {
 const ACTION_MAP: Record<string, ActionConfig> = {
     // CREATE (Adicionar / Criar)
     c: { type: 'create', defaultLabel: 'Criar Aqui', bg: 'var(--ifm-color-info-lightest)', color: 'var(--ifm-color-info-darkest)', border: 'var(--ifm-color-info)' },
-    create: { type: 'create', defaultLabel: 'Criar Aqui', bg: 'var(--ifm-color-info-lightest)', color: 'var(--ifm-color-info-darkest)', border: 'var(--ifm-color-info)' },
-    crie: { type: 'create', defaultLabel: 'Criar Aqui', bg: 'var(--ifm-color-info-lightest)', color: 'var(--ifm-color-info-darkest)', border: 'var(--ifm-color-info)' },
-    add: { type: 'create', defaultLabel: 'Adicionar', bg: 'var(--ifm-color-info-lightest)', color: 'var(--ifm-color-info-darkest)', border: 'var(--ifm-color-info)' },
-    adicione: { type: 'create', defaultLabel: 'Adicionar', bg: 'var(--ifm-color-info-lightest)', color: 'var(--ifm-color-info-darkest)', border: 'var(--ifm-color-info)' },
-
     // READ (Verificar / Ler)
     r: { type: 'read', defaultLabel: 'Verificar', bg: 'var(--ifm-color-primary-lightest)', color: 'var(--ifm-color-primary-darkest)', border: 'var(--ifm-color-primary)' },
-    read: { type: 'read', defaultLabel: 'Verificar', bg: 'var(--ifm-color-primary-lightest)', color: 'var(--ifm-color-primary-darkest)', border: 'var(--ifm-color-primary)' },
-    verify: { type: 'read', defaultLabel: 'Verificar', bg: 'var(--ifm-color-primary-lightest)', color: 'var(--ifm-color-primary-darkest)', border: 'var(--ifm-color-primary)' },
-    verifique: { type: 'read', defaultLabel: 'Verificar', bg: 'var(--ifm-color-primary-lightest)', color: 'var(--ifm-color-primary-darkest)', border: 'var(--ifm-color-primary)' },
-    leia: { type: 'read', defaultLabel: 'Ler', bg: 'var(--ifm-color-primary-lightest)', color: 'var(--ifm-color-primary-darkest)', border: 'var(--ifm-color-primary)' },
-
     // UPDATE (Editar / Atualizar)
     u: { type: 'update', defaultLabel: 'Edite Aqui', bg: 'var(--ifm-color-warning-lightest)', color: 'var(--ifm-color-warning-darkest)', border: 'var(--ifm-color-warning)' },
-    update: { type: 'update', defaultLabel: 'Edite Aqui', bg: 'var(--ifm-color-warning-lightest)', color: 'var(--ifm-color-warning-darkest)', border: 'var(--ifm-color-warning)' },
-    edit: { type: 'update', defaultLabel: 'Edite Aqui', bg: 'var(--ifm-color-warning-lightest)', color: 'var(--ifm-color-warning-darkest)', border: 'var(--ifm-color-warning)' },
-    edite: { type: 'update', defaultLabel: 'Edite Aqui', bg: 'var(--ifm-color-warning-lightest)', color: 'var(--ifm-color-warning-darkest)', border: 'var(--ifm-color-warning)' },
-
     // DELETE (Remover / Deletar)
     d: { type: 'delete', defaultLabel: 'Remover', bg: 'var(--ifm-color-danger-lightest)', color: 'var(--ifm-color-danger-darkest)', border: 'var(--ifm-color-danger)' },
-    delete: { type: 'delete', defaultLabel: 'Remover', bg: 'var(--ifm-color-danger-lightest)', color: 'var(--ifm-color-danger-darkest)', border: 'var(--ifm-color-danger)' },
-    remove: { type: 'delete', defaultLabel: 'Remover', bg: 'var(--ifm-color-danger-lightest)', color: 'var(--ifm-color-danger-darkest)', border: 'var(--ifm-color-danger)' },
-    remover: { type: 'delete', defaultLabel: 'Remover', bg: 'var(--ifm-color-danger-lightest)', color: 'var(--ifm-color-danger-darkest)', border: 'var(--ifm-color-danger)' },
+    // PROFESSOR (p)
+    p: { type: 'professor', defaultLabel: '(Professor)', bg: 'var(--ifm-color-secondary-lightest, #f0f0f0)', color: 'var(--ifm-color-secondary-darkest, #333)', border: 'var(--ifm-color-secondary, #ccc)' },
+    // NOTAS (n)
+    n: { type: 'notas', defaultLabel: '(Notas)', bg: 'var(--ifm-color-secondary-lightest, #f0f0f0)', color: 'var(--ifm-color-secondary-darkest, #333)', border: 'var(--ifm-color-secondary, #ccc)' },
+    // GENERATED / GERADO (g)
+    g: { type: 'generated', defaultLabel: 'Gerado', bg: 'var(--ifm-color-secondary-lightest, #f0f0f0)', color: 'var(--ifm-color-emphasis-700, #555)', border: 'var(--ifm-color-emphasis-400, #bbb)' },
 };
 
 function buildTree(paths: string[]): TreeNode {
@@ -98,7 +87,7 @@ function buildTree(paths: string[]): TreeNode {
 }
 
 const getIcon = (name: string, isFolder: boolean) => {
-    if (isFolder) return '📁';
+    if (isFolder) return '📂';
     if (name.endsWith('.md')) return '📝';
     if (name.endsWith('.yml') || name.endsWith('.yaml')) return '🚀';
     if (name.endsWith('.json') || name.endsWith('.toml') || name.endsWith('.ini')) return '🔧';
