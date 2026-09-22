@@ -140,7 +140,6 @@ export function GitConfig() {
     );
 }
 
-
 // import {DevTools} from '@site/src/components/InstructionsSite';
 // <!-- Lista de Ferramentas de Desenvolvimento -->
 // <DevTools />
@@ -208,20 +207,26 @@ export function DevTools() {
                 <p><b><Link to="/docs/platformio-intro">PlatformIO IDE para VSCode</Link>: Sua porta de entrada para a excelência no desenvolvimento de software embarcado.</b></p>
                 <ul>
                     <li><a href="https://marketplace.visualstudio.com/items?itemName=platformio.platformio-ide" target="_blank">PlatformIO IDE para VSCode</a> Desbloqueie o verdadeiro potencial do desenvolvimento de software embarcado com o ecossistema colaborativo do PlatformIO, adotando princípios declarativos, metodologias orientadas a testes e toolchains modernas para um sucesso incomparável.
+
+                        <ThemeCodeBlock className="language-bash">
+                            code --install-extension platformio.platformio-ide --profile "ESP32IO"
+                        </ThemeCodeBlock>
+                    </li>
+                    <li>
+                        <p>Instale a plataforma espressif32:</p>
+                        <ThemeCodeBlock className="language-bash">
+                            {`pio platform install espressif32`}
+                        </ThemeCodeBlock>
+                        <p>Você precisa editar a variável de ambiente do sistema chamada <b>Path</b> e adicionar o caminho <b>%USERPROFILE%\.platformio\penv\Scripts\</b> no início da lista.</p>
+
+                    </li>
+                    <li>
+                        <p>Inicie o projeto no PlatformIO:</p>
+                        <ThemeCodeBlock className="language-bash">
+                            {`pio project init -b esp32dev -O "framework=arduino" -O "monitor_speed=115200" --sample-code`}
+                        </ThemeCodeBlock>
                     </li>
                 </ul>
-                <ThemeCodeBlock className="language-bash">
-                    code --install-extension platformio.platformio-ide --profile "ESP32IO"
-                </ThemeCodeBlock>
-                <p><ul><li>Instale a plataforma espressif32:</li></ul></p>
-                <ThemeCodeBlock className="language-bash">
-                    {`pio platform install espressif32`}
-                </ThemeCodeBlock>
-                <p>Você precisa editar a variável de ambiente do sistema chamada <b>Path</b> e adicionar o caminho <b>%USERPROFILE%\.platformio\penv\Scripts\</b> no início da lista.</p>
-                <p><ul><li>Inicie o projeto no PlatformIO:</li></ul></p>
-                <ThemeCodeBlock className="language-bash">
-                    {`pio project init -b esp32dev -O "framework=arduino" -O "monitor_speed=115200" --sample-code`}
-                </ThemeCodeBlock>
             </TabItem>
             <TabItem value="esp32-drivers" label="Drivers">
                 <ol>
