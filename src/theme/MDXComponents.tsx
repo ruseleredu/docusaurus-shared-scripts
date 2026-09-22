@@ -9,6 +9,7 @@ import LabSubmit from "@site/src/components/LabSubmit";
 import LabFromTemplate from "@site/src/components/LabFromTemplate";
 import CommitPoint from "@site/src/components/CommitPoint";
 import FileTree from "@site/src/components/shared/FileTree";
+import SimpleFileTree from "@site/src/components/shared/SimpleFileTree";
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
@@ -23,6 +24,7 @@ export default {
     LabFromTemplate,
     CommitPoint,
     FileTree,
+    SimpleFileTree,
     Tabs,
     TabItem,
 };
