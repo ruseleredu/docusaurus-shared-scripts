@@ -1,8 +1,0 @@
-{
-  "label": "Xen Orchestra",
-  "position": 3,
-  "link": {
-    "type": "generated-index",
-    "description": "XO (Xen Orchestra) is a complete solution to visualize, manage, backup and delegate your XCP-ng (or XenServer) infrastructure."
-  }
-}

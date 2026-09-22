@@ -1,143 +1,57 @@
-# Website
+# docusaurus-shared-scripts
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+docusaurus-shared-scripts
 
-## Installation
-
-```bash
-npx create-docusaurus@latest site classic --typescript
-```
-
-[Diagrams](https://docusaurus.io/docs/markdown-features/diagrams)
+## Add Remote
 
 ```bash
-npm install --save @docusaurus/theme-mermaid
+git remote add shared-scripts https://github.com/ruseleredu/docusaurus-shared-scripts.git
 ```
 
-[Math Equations](https://docusaurus.io/docs/markdown-features/math-equations)
+## Add Subtrees
 
 ```bash
-npm install --save remark-math@6 rehype-katex@7
+git subtree add --prefix=scripts shared-scripts main --squash
 ```
 
-## Clone repo
+## List existing remotes
 
 ```bash
-git clone https://github.com/AdrianoRuseler/site.git
-cd site
-npm i
+git remote -v
 ```
 
-## Local Development
+## Pull Updates
 
 ```bash
-cd site
-npm run start
+git subtree pull --prefix=scripts shared-scripts main --squash
 ```
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
-
-## Build
+## Push Changes
 
 ```bash
-npm run build
-npm run serve
+git subtree push --prefix=scripts shared-scripts main
 ```
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
-
-## Deployment
-
-Using SSH:
+## List existing remotes
 
 ```bash
-set GIT_USER=AdrianoRuseler
-npm run deploy
+git remote remove shared-scripts
 ```
 
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
-
-## Upgrade Docusaurus Packages
-
-To upgrade Docusaurus packages with the latest version, run the following command:
+## Add another remote
 
 ```bash
-npm i @docusaurus/core@latest @docusaurus/preset-classic@latest @docusaurus/theme-mermaid@latest @docusaurus/module-type-aliases@latest @docusaurus/tsconfig@latest @docusaurus/types@latest
+git remote add shared-components https://github.com/ruseleredu/docusaurus-shared-components.git
 ```
 
-To ensure accurate Baseline data, please update:
+---
 
-```bash
-npm i baseline-browser-mapping@latest -D
-```
-
-## Install Chart.js and the React wrapper
-
-```bash
-npm install chart.js react-chartjs-2
-```
-
-## Scripts
+# Scripts
 
 ```bash
 node scripts/generate-emojis.js
 ```
 
-## [Docusaurus 3.10](https://docusaurus.io/blog/releases/3.10)
-
 ```bash
-npm install @docusaurus/faster
-```
-
-```js
-  // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
-  future: {
-    v4: true, // Improve compatibility with the upcoming Docusaurus v4
-    faster: true, // Enable all the optimizations that will be part of Docusaurus v4
-  },
-```
-
-### [Strict Comments](https://docusaurus.io/blog/releases/3.10#strict-comments)
-
-```bash
-node fix-mdx.js
-```
-
-### [Strict Heading IDs](https://docusaurus.io/blog/releases/3.10#strict-heading-ids)
-
-```bash
-npx docusaurus write-heading-ids --syntax mdx-comment --migrate
-```
-
-### [MDX rename](https://docusaurus.io/blog/releases/3.10#strict-extensions)
-
-```bash
-node scripts/rename-md.js
-```
-
-## Offline / Local Search for Docusaurus
-
-```bash
-npm install @cmfcmf/docusaurus-search-local
-```
-
-Add this plugin to the `plugins` array in `docusaurus.config.js`.
-
-```js
-const config = {
-  // ...
-  plugins: ["@cmfcmf/docusaurus-search-local"],
-
-  // or, if you want to specify options:
-
-  // ...
-  plugins: [
-    [
-      "@cmfcmf/docusaurus-search-local",
-      {
-        // Options here
-      },
-    ],
-  ],
-};
+node scripts/download-katex.js
 ```

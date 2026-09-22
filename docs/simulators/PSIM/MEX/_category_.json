@@ -1,9 +1,0 @@
-{
-  "label": "MEX API",
-  "position": 2,
-  "link": {
-    "type": "generated-index",
-
-    "description": "C/C++ MEX API for MATLAB (PSIM Integration)"
-  }
-}

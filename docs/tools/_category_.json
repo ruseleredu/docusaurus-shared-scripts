@@ -1,9 +1,0 @@
-{
-  "label": "Software",
-  "position": 5,
-  "link": {
-    "type": "generated-index",
-    "description": "Software related documentation and resources.",
-    "slug": "/tools/folder"
-  }
-}

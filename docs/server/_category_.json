@@ -1,9 +1,0 @@
-{
-  "label": "Server",
-  "position": 2,
-  "link": {
-    "type": "generated-index",
-    "description": "Server related documentation and resources.",
-    "slug": "/server/folder"
-  }
-}
