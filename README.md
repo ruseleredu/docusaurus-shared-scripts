@@ -41,8 +41,7 @@ git remote remove shared-scripts
 ## Add another remote
 
 ```bash
-git remote add shared-components https://github.com/your-org/docusaurus-components.git
-git remote add shared-scripts https://github.com/your-org/shared-scripts.git
+git remote add shared-components https://github.com/ruseleredu/docusaurus-shared-components.git
 ```
 
 ---
