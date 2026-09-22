@@ -23,7 +23,7 @@ async function run() {
       "sidebar_label: 🎭 GitHub Emoji List",
       "---",
       "",
-      "import EmojiTable from '@site/src/components/EmojiTable';",
+      "import EmojiTable from '@site/src/components/shared/EmojiTable.tsx';",
       "",
       "# 🎭 GitHub Emoji Reference",
       "",
