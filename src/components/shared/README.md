@@ -22,13 +22,13 @@ git remote -v
 ## Pull Updates
 
 ```bash
-git subtree pull --prefix=scripts shared-components main --squash
+git subtree pull --prefix=src/components/shared shared-components main --squash
 ```
 
 ## Push Changes
 
 ```bash
-git subtree push --prefix=scripts shared-components main
+git subtree push --prefix=src/components/shared shared-components main
 ```
 
 ## Remove remote
