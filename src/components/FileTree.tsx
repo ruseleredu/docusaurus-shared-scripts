@@ -1,25 +1,18 @@
 import React, { useState } from 'react';
 
-export type ActionType = 'create' | 'read' | 'update' | 'delete';
+export type ActionType = 'create' | 'read' | 'update' | 'delete' | 'professor' | 'notas' | 'generated';
 
 export interface FileTreeProps {
     /** Nome da pasta raiz principal */
     root?: string;
-    /** Array de caminhos relativos com ações opcionais. Ex: ["wokwi.toml u", "Empty/Folder/", "..."] */
+    /** Array de caminhos relativos com ações opcionais. Ex: ["wokwi.toml u", ".github/workflows/grade.yml d"] */
     files: string[];
-    /** Se verdadeiro, envolve a árvore em um elemento <details> para expandir/contrair */
-    details?: boolean;
-    /** Título do summary quando details for true. Se omitido, usa "Estrutura de arquivos: {root}" ou "Estrutura de arquivos" */
-    title?: string;
-    /** Define se o details inicia aberto (padrão: false) */
-    defaultOpen?: boolean;
 }
 
 interface TreeNode {
     name: string;
     relativePath: string;
     isFolder: boolean;
-    isEllipsis?: boolean;
     action?: ActionType;
     customLabel?: string;
     children: Record<string, TreeNode>;
@@ -33,32 +26,22 @@ interface ActionConfig {
     border: string;
 }
 
+// Mapeamento extensível para CRUD (Aceita iniciais c, r, u, d e termos em PT/EN)
 const ACTION_MAP: Record<string, ActionConfig> = {
-    // CREATE
+    // CREATE (Adicionar / Criar)
     c: { type: 'create', defaultLabel: 'Criar Aqui', bg: 'var(--ifm-color-info-lightest)', color: 'var(--ifm-color-info-darkest)', border: 'var(--ifm-color-info)' },
-    create: { type: 'create', defaultLabel: 'Criar Aqui', bg: 'var(--ifm-color-info-lightest)', color: 'var(--ifm-color-info-darkest)', border: 'var(--ifm-color-info)' },
-    crie: { type: 'create', defaultLabel: 'Criar Aqui', bg: 'var(--ifm-color-info-lightest)', color: 'var(--ifm-color-info-darkest)', border: 'var(--ifm-color-info)' },
-    add: { type: 'create', defaultLabel: 'Adicionar', bg: 'var(--ifm-color-info-lightest)', color: 'var(--ifm-color-info-darkest)', border: 'var(--ifm-color-info)' },
-    adicione: { type: 'create', defaultLabel: 'Adicionar', bg: 'var(--ifm-color-info-lightest)', color: 'var(--ifm-color-info-darkest)', border: 'var(--ifm-color-info)' },
-
-    // READ
+    // READ (Verificar / Ler)
     r: { type: 'read', defaultLabel: 'Verificar', bg: 'var(--ifm-color-primary-lightest)', color: 'var(--ifm-color-primary-darkest)', border: 'var(--ifm-color-primary)' },
-    read: { type: 'read', defaultLabel: 'Verificar', bg: 'var(--ifm-color-primary-lightest)', color: 'var(--ifm-color-primary-darkest)', border: 'var(--ifm-color-primary)' },
-    verify: { type: 'read', defaultLabel: 'Verificar', bg: 'var(--ifm-color-primary-lightest)', color: 'var(--ifm-color-primary-darkest)', border: 'var(--ifm-color-primary)' },
-    verifique: { type: 'read', defaultLabel: 'Verificar', bg: 'var(--ifm-color-primary-lightest)', color: 'var(--ifm-color-primary-darkest)', border: 'var(--ifm-color-primary)' },
-    leia: { type: 'read', defaultLabel: 'Ler', bg: 'var(--ifm-color-primary-lightest)', color: 'var(--ifm-color-primary-darkest)', border: 'var(--ifm-color-primary)' },
-
-    // UPDATE
+    // UPDATE (Editar / Atualizar)
     u: { type: 'update', defaultLabel: 'Edite Aqui', bg: 'var(--ifm-color-warning-lightest)', color: 'var(--ifm-color-warning-darkest)', border: 'var(--ifm-color-warning)' },
-    update: { type: 'update', defaultLabel: 'Edite Aqui', bg: 'var(--ifm-color-warning-lightest)', color: 'var(--ifm-color-warning-darkest)', border: 'var(--ifm-color-warning)' },
-    edit: { type: 'update', defaultLabel: 'Edite Aqui', bg: 'var(--ifm-color-warning-lightest)', color: 'var(--ifm-color-warning-darkest)', border: 'var(--ifm-color-warning)' },
-    edite: { type: 'update', defaultLabel: 'Edite Aqui', bg: 'var(--ifm-color-warning-lightest)', color: 'var(--ifm-color-warning-darkest)', border: 'var(--ifm-color-warning)' },
-
-    // DELETE
+    // DELETE (Remover / Deletar)
     d: { type: 'delete', defaultLabel: 'Remover', bg: 'var(--ifm-color-danger-lightest)', color: 'var(--ifm-color-danger-darkest)', border: 'var(--ifm-color-danger)' },
-    delete: { type: 'delete', defaultLabel: 'Remover', bg: 'var(--ifm-color-danger-lightest)', color: 'var(--ifm-color-danger-darkest)', border: 'var(--ifm-color-danger)' },
-    remove: { type: 'delete', defaultLabel: 'Remover', bg: 'var(--ifm-color-danger-lightest)', color: 'var(--ifm-color-danger-darkest)', border: 'var(--ifm-color-danger)' },
-    remover: { type: 'delete', defaultLabel: 'Remover', bg: 'var(--ifm-color-danger-lightest)', color: 'var(--ifm-color-danger-darkest)', border: 'var(--ifm-color-danger)' },
+    // PROFESSOR (p)
+    p: { type: 'professor', defaultLabel: '(Professor)', bg: 'var(--ifm-color-secondary-lightest, #f0f0f0)', color: 'var(--ifm-color-secondary-darkest, #333)', border: 'var(--ifm-color-secondary, #ccc)' },
+    // NOTAS (n)
+    n: { type: 'notas', defaultLabel: '(Notas)', bg: 'var(--ifm-color-secondary-lightest, #f0f0f0)', color: 'var(--ifm-color-secondary-darkest, #333)', border: 'var(--ifm-color-secondary, #ccc)' },
+    // GENERATED / GERADO (g)
+    g: { type: 'generated', defaultLabel: 'Gerado', bg: 'var(--ifm-color-secondary-lightest, #f0f0f0)', color: 'var(--ifm-color-emphasis-700, #555)', border: 'var(--ifm-color-emphasis-400, #bbb)' },
 };
 
 function buildTree(paths: string[]): TreeNode {
@@ -68,22 +51,9 @@ function buildTree(paths: string[]): TreeNode {
         const trimmed = rawPath.trim();
         if (!trimmed) return;
 
-        if (trimmed === '...' || trimmed.startsWith('...')) {
-            const key = `ellipsis_${Math.random()}`;
-            treeRoot.children[key] = {
-                name: '...',
-                relativePath: '',
-                isFolder: false,
-                isEllipsis: true,
-                children: {},
-            };
-            return;
-        }
-
         const parts = trimmed.split(/\s+/);
         const pathPart = parts[0];
         const rawAction = parts[1]?.toLowerCase();
-        const isExplicitFolder = pathPart.endsWith('/');
 
         const segments = pathPart.split('/').filter(Boolean);
         let current = treeRoot;
@@ -97,7 +67,7 @@ function buildTree(paths: string[]): TreeNode {
                 current.children[segment] = {
                     name: segment,
                     relativePath: accumulatedPath,
-                    isFolder: !isLast || isExplicitFolder,
+                    isFolder: !isLast,
                     children: {},
                 };
             }
@@ -117,7 +87,7 @@ function buildTree(paths: string[]): TreeNode {
 }
 
 const getIcon = (name: string, isFolder: boolean) => {
-    if (isFolder) return '📁';
+    if (isFolder) return '📂';
     if (name.endsWith('.md')) return '📝';
     if (name.endsWith('.yml') || name.endsWith('.yaml')) return '🚀';
     if (name.endsWith('.json') || name.endsWith('.toml') || name.endsWith('.ini')) return '🔧';
@@ -133,17 +103,6 @@ function RenderBranch({ nodes, copiedPath, onCopy }: { nodes: TreeNode[]; copied
                 const actionCfg = node.action ? Object.values(ACTION_MAP).find(a => a.type === node.action) : null;
                 const childNodes = Object.values(node.children);
                 const isCopied = copiedPath === node.relativePath;
-
-                if (node.isEllipsis) {
-                    return (
-                        <li key={index} style={{ margin: '0.15rem 0', lineHeight: '1.6rem' }}>
-                            <span style={{ color: 'var(--ifm-color-emphasis-500)', fontFamily: 'monospace' }}>
-                                {prefix}
-                            </span>
-                            <span style={{ color: 'var(--ifm-color-emphasis-600)', fontStyle: 'italic' }}>...</span>
-                        </li>
-                    );
-                }
 
                 return (
                     <li key={node.name} style={{ margin: '0.15rem 0', lineHeight: '1.6rem' }}>
@@ -206,13 +165,7 @@ function RenderBranch({ nodes, copiedPath, onCopy }: { nodes: TreeNode[]; copied
     );
 }
 
-export default function FileTree({
-    root = '',
-    files,
-    details = false,
-    title,
-    defaultOpen = false,
-}: FileTreeProps): React.JSX.Element {
+export default function FileTree({ root = '', files }: FileTreeProps): React.JSX.Element {
     const [copiedPath, setCopiedPath] = useState<string | null>(null);
     const treeRoot = buildTree(files);
     const displayNodes = Object.values(treeRoot.children);
@@ -223,47 +176,6 @@ export default function FileTree({
         setTimeout(() => setCopiedPath(null), 2000);
     };
 
-    const treeContent = (
-        <div style={{
-            fontFamily: 'var(--ifm-font-family-monospace)',
-            fontSize: '0.9rem',
-            marginTop: details ? '0.5rem' : '0',
-        }}>
-            {root && (
-                <div style={{ fontWeight: 'bold', marginBottom: '0.25rem' }}>
-                    📂 {root}/
-                </div>
-            )}
-            <RenderBranch nodes={displayNodes} copiedPath={copiedPath} onCopy={handleCopy} />
-        </div>
-    );
-
-    if (details) {
-        const summaryTitle = title || (root ? `Estrutura de arquivos: ${root}` : 'Estrutura de arquivos');
-
-        return (
-            <details
-                open={defaultOpen}
-                style={{
-                    margin: '1rem 0',
-                    padding: '0.75rem 1rem',
-                    borderRadius: 'var(--ifm-global-radius)',
-                    border: '1px solid var(--ifm-color-emphasis-300)',
-                    backgroundColor: 'var(--ifm-background-surface-color)',
-                }}
-            >
-                <summary style={{
-                    fontWeight: 'bold',
-                    cursor: 'pointer',
-                    color: 'var(--ifm-color-primary-darker)',
-                }}>
-                    {summaryTitle}
-                </summary>
-                {treeContent}
-            </details>
-        );
-    }
-
     return (
         <div style={{
             margin: '1rem 0',
@@ -271,8 +183,15 @@ export default function FileTree({
             borderRadius: 'var(--ifm-global-radius)',
             border: '1px solid var(--ifm-color-emphasis-300)',
             backgroundColor: 'var(--ifm-background-surface-color)',
+            fontFamily: 'var(--ifm-font-family-monospace)',
+            fontSize: '0.9rem'
         }}>
-            {treeContent}
+            {root && (
+                <div style={{ fontWeight: 'bold', marginBottom: '0.25rem' }}>
+                    📂 {root}/
+                </div>
+            )}
+            <RenderBranch nodes={displayNodes} copiedPath={copiedPath} onCopy={handleCopy} />
         </div>
     );
 }
