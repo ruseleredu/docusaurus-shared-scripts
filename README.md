@@ -1,146 +1,54 @@
-# Website
+# docusaurus-shared-scripts
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+docusaurus-shared-scripts
 
-- https://adrianoruseler.github.io/site/docs/docusaurus/folder
-
-## Installation
-
-- https://www.youtube.com/watch?v=ALDuHAi4F4A
+## Add Remote
 
 ```bash
-npx create-docusaurus@latest ea-docs classic --typescript
+git remote add shared-scripts https://github.com/ruseleredu/docusaurus-shared-scripts.git
 ```
+
+## Add Subtrees
 
 ```bash
-git init
-git add .
-git commit -m "first commit"
-git branch -M main
-git remote add origin https://github.com/ruseleredu/ea-docs.git
-git push -u origin main
+git subtree add --prefix=scripts shared-scripts main --squash
 ```
 
-[Diagrams](https://docusaurus.io/docs/markdown-features/diagrams)
-
-- https://www.youtube.com/watch?v=EACrMUdoYto
+## List existing remotes
 
 ```bash
-npm install --save @docusaurus/theme-mermaid
+git remote -v
 ```
 
-[Math Equations](https://docusaurus.io/docs/markdown-features/math-equations)
-
-- https://www.youtube.com/watch?v=oztjeloRbvU
+## Pull Updates
 
 ```bash
-npm install --save remark-math@6 rehype-katex@7
+git subtree pull --prefix=scripts shared-scripts main --squash
 ```
 
-## Clone repo
+## Push Changes
 
 ```bash
-git clone https://github.com/ruseleredu/ea-docs.git
-cd ea-docs
-npm i
+git subtree push --prefix=scripts shared-scripts main
 ```
 
-## Local Development
+## List existing remotes
 
 ```bash
-npm run start
+git remote remove shared-scripts
 ```
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
-
-## Build
+## Add another remote
 
 ```bash
-npm run build
+git remote add shared-components https://github.com/your-org/docusaurus-components.git
+git remote add shared-scripts https://github.com/your-org/shared-scripts.git
 ```
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
+---
+
+# Scripts
 
 ```bash
-npm run serve
-```
-
-## Deployment
-
-```bash
-set GIT_USER=ruseleredu
-npm run deploy
-```
-
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
-
-## Upgrade Docusaurus
-
-To upgrade Docusaurus packages with the latest version, run the following command:
-
-```bash
-npm i @docusaurus/core@latest @docusaurus/preset-classic@latest @docusaurus/theme-mermaid@latest @docusaurus/module-type-aliases@latest @docusaurus/tsconfig@latest @docusaurus/types@latest
-```
-
-If you trust these packages:
-
-```bash
-npm install-scripts approve @swc/core
-npm install-scripts approve core-js
-```
-
-To ensure accurate Baseline data, please update:
-
-```bash
-npm i baseline-browser-mapping@latest -D
-```
-
-```bash
-npm update
-```
-
-```bash
-npm audit fix
-```
-
-## Install Chart.js and the React wrapper
-
-```bash
-npm install chart.js react-chartjs-2
-```
-
-## SVG Repo
-
-- https://www.svgrepo.com/collection/education-sephia-filled-icons/
-
-## [Docusaurus 3.10](https://docusaurus.io/blog/releases/3.10)
-
-```bash
-npm install @docusaurus/faster
-```
-
-```js
-  // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
-  future: {
-    v4: true, // Improve compatibility with the upcoming Docusaurus v4
-    faster: true, // Enable all the optimizations that will be part of Docusaurus v4
-  },
-```
-
-### [Strict Comments](https://docusaurus.io/blog/releases/3.10#strict-comments)
-
-```bash
-node fix-mdx.js
-```
-
-### [Strict Heading IDs](https://docusaurus.io/blog/releases/3.10#strict-heading-ids)
-
-```bash
-npx docusaurus write-heading-ids --syntax mdx-comment --migrate
-```
-
-### [MDX rename](https://docusaurus.io/blog/releases/3.10#strict-extensions)
-
-```bash
-node scripts/rename-md.js
+node scripts/generate-emojis.js
 ```
