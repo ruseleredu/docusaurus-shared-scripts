@@ -51,3 +51,7 @@ git remote add shared-components https://github.com/ruseleredu/docusaurus-shared
 ```bash
 node scripts/generate-emojis.js
 ```
+
+```bash
+node scripts/download-katex.js
+```
