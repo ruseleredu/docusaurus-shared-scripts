@@ -55,3 +55,23 @@ node scripts/generate-emojis.js
 ```bash
 node scripts/download-katex.js
 ```
+
+# Template LABs (MIC)
+
+- Empty
+
+```bash
+./scripts/mic/create-lab-template.sh
+```
+
+- PIO init
+  
+```bash
+./scripts/mic/create-lab-pio-template.sh
+```
+
+- Inicializa repo pro grupo
+  
+```bash
+./scripts/mic/create-lab-from-template.sh
+```
