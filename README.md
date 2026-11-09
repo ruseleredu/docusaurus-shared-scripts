@@ -113,20 +113,13 @@ Primeiro, descubra o commit base, ou seja, o último commit do template antes da
 TMPDIR=$(mktemp -d) && gh repo clone ELT73A-S22-2026-2/lab07-template "$TMPDIR" && git -C "$TMPDIR" log --oneline
 ```
 
-```bash
-# Create the temporary directory
-TMPDIR=$(mktemp -d)
-
-# Ensure the directory is automatically removed when the script/session exits
-trap 'rm -rf "$TMPDIR"' EXIT
-
-# Run your commands
-gh repo clone ELT73A-S22-2026-2/lab05-template "$TMPDIR"
-git -C "$TMPDIR" log --oneline
-```
 
 ```bash
 (TMPDIR=$(mktemp -d) && trap 'rm -rf "$TMPDIR"' EXIT && gh repo clone ELT73A-S22-2026-2/lab05-template "$TMPDIR" && git -C "$TMPDIR" log --oneline)
+```
+
+```bash
+gh api repos/ELT73A-S22-2026-2/lab07-template/commits --jq '.[] | "\(.sha[0:7]) \(.commit.message | split("\n")[0])"'
 ```
 
 Depois rode o script com esse commit:
