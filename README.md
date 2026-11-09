@@ -110,7 +110,23 @@ Um grupo que já editou outros arquivos (o `main.cpp`, por exemplo) recebe as al
 Primeiro, descubra o commit base, ou seja, o último commit do template antes das suas alterações:
 
 ```bash
-gh repo clone ELT73A-S22-2026-2/lab05-template /tmp/t && git -C /tmp/t log --oneline
+TMPDIR=$(mktemp -d) && gh repo clone ELT73A-S22-2026-2/lab07-template "$TMPDIR" && git -C "$TMPDIR" log --oneline
+```
+
+```bash
+# Create the temporary directory
+TMPDIR=$(mktemp -d)
+
+# Ensure the directory is automatically removed when the script/session exits
+trap 'rm -rf "$TMPDIR"' EXIT
+
+# Run your commands
+gh repo clone ELT73A-S22-2026-2/lab05-template "$TMPDIR"
+git -C "$TMPDIR" log --oneline
+```
+
+```bash
+(TMPDIR=$(mktemp -d) && trap 'rm -rf "$TMPDIR"' EXIT && gh repo clone ELT73A-S22-2026-2/lab05-template "$TMPDIR" && git -C "$TMPDIR" log --oneline)
 ```
 
 Depois rode o script com esse commit:
