@@ -147,3 +147,11 @@ Depois rode o script com esse commit:
 - Não rode o script de novo nos grupos que já foram atualizados. O `git am` recusa patches que já foram aplicados.
 
 Se nenhum grupo mexeu nos repositórios ainda, a opção mais simples é apagar os repositórios dos grupos (`gh repo delete`) e rodar de novo o `create-lab-from-template.sh`.
+
+## Componentes utilizados
+
+```bash
+node scripts\mic\componentes-usados.mjs
+node scripts\mic\componentes-usados.mjs --detalhe
+node scripts\mic\componentes-usados.mjs LabIotAlunoSimples
+```
