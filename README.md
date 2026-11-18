@@ -149,6 +149,12 @@ Depois rode o script com esse commit:
 Se nenhum grupo mexeu nos repositórios ainda, a opção mais simples é apagar os repositórios dos grupos (`gh repo delete`) e rodar de novo o `create-lab-from-template.sh`.
 
 ## Componentes utilizados
+O que ele mostra:
+
+- Usados nas páginas: quantas páginas usam cada componente, com a marca [global] nos que vêm do MDXComponents.
+- Usados só por código: os que só outros componentes ou páginas .tsx usam.
+- Sem uso: os candidatos a remover. Também marca os que estão registrados como globais mas que nenhuma página usa, e esses você pode tirar do MDXComponents.tsx.
+- Tags sem import nem registro global: tags que vão quebrar a página, por exemplo um componente que você esqueceu de registrar.
 
 ```bash
 node scripts\mic\componentes-usados.mjs
